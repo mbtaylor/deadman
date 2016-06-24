@@ -1,15 +1,64 @@
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 public class Deadman {
+
+    private static final Logger logger_ =
+        Logger.getLogger( Deadman.class.getName() );
+
     public static void main( String[] args ) {
+        String usage = new StringBuffer()
+            .append( "   Usage: " )
+            .append( Deadman.class.getName() )
+            .append( " [-help]" )
+            .append( " [-limit <sec>]" )
+            .append( " [-warning <sec>]" )
+            .toString();
+        int limitSec = 30 * 60;
+        int warningSec = 3 * 60;
+        List<String> argList = new ArrayList<String>( Arrays.asList( args ) );
+        for ( Iterator<String> it = argList.iterator(); it.hasNext(); ) {
+            String arg = it.next();
+            if ( arg.startsWith( "-h" ) ||
+                 arg.startsWith( "--h" ) ) {
+                it.remove();
+                System.err.println( usage );
+                System.exit( 0 );
+            }
+            else if ( "-limit".equals( arg ) && it.hasNext() ) {
+                it.remove();
+                limitSec = Integer.parseInt( it.next() );
+                it.remove();
+            }
+            else if ( "-warning".equals( arg ) && it.hasNext() ) {
+                it.remove();
+                warningSec = Integer.parseInt( it.next() );
+                it.remove();
+            }
+            else {
+                System.err.println( usage );
+                System.exit( 1 );
+            }
+        }
+        if ( argList.size() > 0 ) {
+            System.err.println( usage );
+            System.exit( 1 );
+        }
         JFrame frm = new JFrame();
         Alarm alarm = Alarm.createAlarm();
-        CountdownPanel counter = new CountdownPanel( alarm, 20, 5 );
+        logger_.info( "Limit: " + limitSec + "s; "
+                    + "Warning: " + warningSec + "s" );
+        CountdownPanel counter =
+            new CountdownPanel( alarm, limitSec, warningSec );
         Container content = frm.getContentPane();
         content.setLayout( new BorderLayout() );
         content.add( counter, BorderLayout.CENTER );
