@@ -23,7 +23,7 @@ public class Deadman {
             .append( " [-limit <sec>]" )
             .append( " [-warning <sec>]" )
             .toString();
-        int limitSec = 30 * 60;
+        int resetSec = 30 * 60;
         int warningSec = 3 * 60;
         List<String> argList = new ArrayList<String>( Arrays.asList( args ) );
         for ( Iterator<String> it = argList.iterator(); it.hasNext(); ) {
@@ -36,7 +36,7 @@ public class Deadman {
             }
             else if ( "-limit".equals( arg ) && it.hasNext() ) {
                 it.remove();
-                limitSec = Integer.parseInt( it.next() );
+                resetSec = Integer.parseInt( it.next() );
                 it.remove();
             }
             else if ( "-warning".equals( arg ) && it.hasNext() ) {
@@ -55,15 +55,17 @@ public class Deadman {
         }
         JFrame frm = new JFrame();
         Alarm alarm = Alarm.createAlarm();
-        logger_.info( "Limit: " + limitSec + "s; "
+        logger_.info( "Limit: " + resetSec + "s; "
                     + "Warning: " + warningSec + "s" );
-        CountdownPanel counter =
-            new CountdownPanel( alarm, limitSec, warningSec );
+        CountdownPanel counter = new CountdownPanel( alarm );
+        counter.setResetSeconds( resetSec );
+        counter.setWarningSeconds( warningSec );
         Container content = frm.getContentPane();
         content.setLayout( new BorderLayout() );
         content.add( counter, BorderLayout.CENTER );
         counter.setBorder( BorderFactory.createEmptyBorder( 24, 24, 24, 24 ) );
         frm.pack();
+        frm.setLocationRelativeTo( null );
         frm.setVisible( true );
     }
 }
