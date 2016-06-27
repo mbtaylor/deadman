@@ -17,7 +17,7 @@ JAVAMAIL_JAR = javax.mail-1.5.5.jar
 build: $(JARFILE)
 
 run: build
-	java -jar $(JARFILE):$(JAVAMAIL_JAR) -limit 10 -warning 5
+	java -jar $(JARFILE) -limit 10 -warning 5
 
 clean:
 	rm -rf tmp tmp.manifest $(JARFILE)
