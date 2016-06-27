@@ -1,6 +1,7 @@
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -15,7 +16,7 @@ public class Deadman {
     private static final Logger logger_ =
         Logger.getLogger( Deadman.class.getName() );
 
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws IOException {
         String usage = new StringBuffer()
             .append( "   Usage: " )
             .append( Deadman.class.getName() )
@@ -64,10 +65,10 @@ public class Deadman {
             System.exit( 1 );
         }
         JFrame frm = new JFrame();
-        Alarm alarm = Alarm.createAlarm();
+        Alert alert = Alert.createAlert();
         logger_.info( "Limit: " + resetSec + "s; "
                     + "Warning: " + warningSec + "s" );
-        CountdownPanel counter = new CountdownPanel( alarm );
+        CountdownPanel counter = new CountdownPanel( alert );
         counter.setResetSeconds( resetSec );
         counter.setWarningSeconds( warningSec );
         Container content = frm.getContentPane();

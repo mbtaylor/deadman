@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -15,16 +16,18 @@ import javax.swing.Timer;
 
 public class CountdownPanel extends JPanel {
 
-    private final Alarm alarm_;
+    private final Alert alert_;
     private final JLabel countLabel_;
     private final JButton resetButton_;
     private long zeroEpoch_;
     private int resetSec_ = 30 * 60;
     private int warningSec_ = 3 * 60;
+    private static final Logger logger_ =
+        Logger.getLogger( CountdownPanel.class.getName() );
 
-    public CountdownPanel( Alarm alarm ) {
+    public CountdownPanel( Alert alert ) {
         super( new BorderLayout() );
-        alarm_ = alarm;
+        alert_ = alert;
         countLabel_ = new JLabel();
         countLabel_.setOpaque( true );
         countLabel_.setFont( new Font( Font.MONOSPACED, Font.BOLD, 96 ) );
@@ -37,12 +40,12 @@ public class CountdownPanel extends JPanel {
                 updateTime();
             }
         } );
-        resetZero( resetSec_ );
         add( countLabel_, BorderLayout.CENTER );
 
         resetButton_ = new JButton( new AbstractAction( "Reset" ) {
             public void actionPerformed( ActionEvent evt ) {
-                resetZero( resetSec_ );
+                logger_.info( "Reset by user to " + resetSec_ + "s" );
+                resetZero();
             }
         } );
         resetButton_.setFont( new Font( Font.DIALOG, Font.BOLD, 48 ) );
@@ -54,22 +57,23 @@ public class CountdownPanel extends JPanel {
         buttonLine.setBorder( BorderFactory
                              .createEmptyBorder( 20, 20, 20, 20 ) );
         add( buttonLine, BorderLayout.SOUTH );
+        resetZero();
         timer.start();
     }
 
     public void setResetSeconds( int resetSec ) {
         resetSec_ = resetSec;
-        updateTime();
+        resetZero();
     }
 
     public void setWarningSeconds( int warningSec ) {
         warningSec_ = warningSec;
-        updateTime();
+        resetZero();
     }
 
-    public void resetZero( int resetsec ) {
-        zeroEpoch_ = System.currentTimeMillis() + resetsec * 1000;
-        alarm_.stop();
+    public void resetZero() {
+        zeroEpoch_ = System.currentTimeMillis() + resetSec_ * 1000;
+        alert_.setStatus( null );
         updateTime();
     }
 
@@ -77,22 +81,28 @@ public class CountdownPanel extends JPanel {
         long millis = zeroEpoch_ - System.currentTimeMillis() + 999;
         long posMillis = Math.max( 0, millis );
         countLabel_.setText( formatMillis( posMillis ) );
-        boolean isWarning = posMillis <= 1000 * warningSec_;
-        boolean isTimeout = millis <= 0;
+        final Status status;
+        if ( millis <= 0 ) {
+            status = Status.DANGER;
+        }
+        else if ( millis <= 1000 * warningSec_ ) {
+            status = Status.WARNING;
+        }
+        else {
+            status = null;
+        }
         final Color bg;
-        if ( isTimeout ) {
+        if ( status == Status.DANGER ) {
             bg = ( millis / 200 ) % 2 == 0 ? Color.RED : Color.PINK;
         }
-        else if ( isWarning ) {
+        else if ( status == Status.WARNING ) {
             bg = Color.ORANGE;
         }
         else {
             bg = Color.GREEN;
         }
         countLabel_.setBackground( bg );
-        if ( millis <= 0 ) {
-            alarm_.start();
-        }
+        alert_.setStatus( status );
     }
 
     private String formatMillis( long positiveMillis ) {
