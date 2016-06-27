@@ -22,9 +22,11 @@ public class Deadman {
             .append( " [-help]" )
             .append( " [-limit <sec>]" )
             .append( " [-warning <sec>]" )
+            .append( " [-[no]alwaysontop]" )
             .toString();
         int resetSec = 30 * 60;
         int warningSec = 3 * 60;
+        boolean alwaysOnTop = true;
         List<String> argList = new ArrayList<String>( Arrays.asList( args ) );
         for ( Iterator<String> it = argList.iterator(); it.hasNext(); ) {
             String arg = it.next();
@@ -43,6 +45,14 @@ public class Deadman {
                 it.remove();
                 warningSec = Integer.parseInt( it.next() );
                 it.remove();
+            }
+            else if ( "-alwaysontop".equals( arg ) ) {
+                it.remove();
+                alwaysOnTop = true;
+            }
+            else if ( "-noalwaysontop".equals( arg ) ) {
+                it.remove();
+                alwaysOnTop = false;
             }
             else {
                 System.err.println( usage );
@@ -67,5 +77,13 @@ public class Deadman {
         frm.pack();
         frm.setLocationRelativeTo( null );
         frm.setVisible( true );
+        if ( alwaysOnTop ) {
+            if ( frm.isAlwaysOnTopSupported() ) {
+                frm.setAlwaysOnTop( true );
+            }
+            else {
+                logger_.warning( "Always on top unsupported for window" );
+            }
+        }
     }
 }
