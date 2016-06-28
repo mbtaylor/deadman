@@ -29,8 +29,8 @@ $(JARFILE): $(JSRC) $(RESOURCES) $(JAVAMAIL_JAR)
 	mkdir tmp
 	javac -classpath $(JAVAMAIL_JAR) -d tmp $(JSRC)
 	cp $(RESOURCES) tmp/
+	cd tmp && jar xf ../$(JAVAMAIL_JAR) javax/mail com/sun/mail
 	echo "Main-Class: $(MAINCLASS)" >tmp.manifest
-	echo "Class-path: $(JAVAMAIL_JAR)" >>tmp.manifest
 	cd tmp && jar cmf ../tmp.manifest ../$@ .
 	rm -rf tmp tmp.manifest
 
