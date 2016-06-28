@@ -13,7 +13,7 @@ RESOURCES = \
             redalert.wav \
 
 JARFILE = deadman.jar
-MAINCLASS = Deadman
+MAINCLASS = uk.ac.bristol.star.deadman.Deadman
 JAVAMAIL_JAR = javax.mail-1.5.5.jar
 
 build: $(JARFILE)
@@ -28,7 +28,7 @@ $(JARFILE): $(JSRC) $(RESOURCES) $(JAVAMAIL_JAR)
 	rm -rf tmp
 	mkdir tmp
 	javac -classpath $(JAVAMAIL_JAR) -d tmp $(JSRC)
-	cp $(RESOURCES) tmp/
+	cp $(RESOURCES) tmp/uk/ac/bristol/star/deadman/
 	cd tmp && jar xf ../$(JAVAMAIL_JAR) javax/mail com/sun/mail
 	echo "Main-Class: $(MAINCLASS)" >tmp.manifest
 	cd tmp && jar cmf ../tmp.manifest ../$@ .

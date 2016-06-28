@@ -1,3 +1,4 @@
+package uk.ac.bristol.star.deadman;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

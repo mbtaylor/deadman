@@ -1,3 +1,4 @@
+package uk.ac.bristol.star.deadman;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
