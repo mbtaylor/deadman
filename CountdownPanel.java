@@ -58,7 +58,8 @@ public class CountdownPanel extends JPanel {
 
         resetButton_ = new JButton( new AbstractAction( "Reset" ) {
             public void actionPerformed( ActionEvent evt ) {
-                logger_.info( "Reset by user to " + resetSec_ + "s" );
+                logger_.info( "Reset by user to "
+                            + formatMillis( resetSec_ * 1000 ) );
                 resetZero();
             }
         } );
