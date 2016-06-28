@@ -24,10 +24,14 @@ public class Deadman {
             .append( " [-limit <sec>]" )
             .append( " [-warning <sec>]" )
             .append( " [-[no]alwaysontop]" )
+            .append( " [-mailed <recipient>]" )
+            .append( " [-[no]audio]" )
             .toString();
         int resetSec = 30 * 60;
         int warningSec = 3 * 60;
         boolean alwaysOnTop = true;
+        boolean isAudio = true;
+        List<String> mailedList = new ArrayList<String>();
         List<String> argList = new ArrayList<String>( Arrays.asList( args ) );
         for ( Iterator<String> it = argList.iterator(); it.hasNext(); ) {
             String arg = it.next();
@@ -55,6 +59,17 @@ public class Deadman {
                 it.remove();
                 alwaysOnTop = false;
             }
+            else if ( "-mailed".equals( arg ) && it.hasNext() ) {
+                it.remove();
+                mailedList.add( it.next() );
+                it.remove();
+            }
+            else if ( "-audio".equals( arg ) ) {
+                isAudio = true;
+            }
+            else if ( "-noaudio".equals( arg ) ) {
+                isAudio = false;
+            }
             else {
                 System.err.println( usage );
                 System.exit( 1 );
@@ -65,12 +80,21 @@ public class Deadman {
             System.exit( 1 );
         }
         JFrame frm = new JFrame();
-        Alert alert = Alert.createAlert();
+        List<Alert> alerts = new ArrayList<Alert>();
+        if ( isAudio ) {
+            alerts.add( Alerts.createSirenAlert() );
+        }
+        alerts.add( Alerts.createLoggingAlert() );
+        if ( mailedList.size() > 0 ) {
+            String[] recipients = mailedList.toArray( new String[ 0 ] );
+            alerts.add( Alerts.createEmailAlert( recipients ) );
+        }
+        Alert alert = Alerts.createMultiAlert( alerts );
         logger_.info( "Limit: " + resetSec + "s; "
                     + "Warning: " + warningSec + "s" );
         CountdownPanel counter = new CountdownPanel( alert );
-        counter.setResetSeconds( resetSec );
         counter.setWarningSeconds( warningSec );
+        counter.setResetSeconds( resetSec );
         Container content = frm.getContentPane();
         content.setLayout( new BorderLayout() );
         content.add( counter, BorderLayout.CENTER );

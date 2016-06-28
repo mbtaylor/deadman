@@ -1,9 +1,11 @@
 
 JSRC = \
        Alert.java \
+       Alerts.java \
        CountdownPanel.java \
        Deadman.java \
-       MessageSender.java \
+       Mailer.java \
+       SoundAlert.java \
        Status.java \
 
 RESOURCES = \

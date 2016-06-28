@@ -79,30 +79,36 @@ public class CountdownPanel extends JPanel {
 
     private void updateTime() {
         long millis = zeroEpoch_ - System.currentTimeMillis() + 999;
-        long posMillis = Math.max( 0, millis );
-        countLabel_.setText( formatMillis( posMillis ) );
-        final Status status;
-        if ( millis <= 0 ) {
-            status = Status.DANGER;
-        }
-        else if ( millis <= 1000 * warningSec_ ) {
-            status = Status.WARNING;
-        }
-        else {
-            status = null;
-        }
-        final Color bg;
+        countLabel_.setText( formatMillis( Math.max( 0, millis ) ) );
+        Status status = getStatus( millis );
+        countLabel_.setBackground( getBackgroundColor( status ) );
+        alert_.setStatus( status );
+    }
+
+    private Color getBackgroundColor( Status status ) {
         if ( status == Status.DANGER ) {
-            bg = ( millis / 200 ) % 2 == 0 ? Color.RED : Color.PINK;
+            return ( System.currentTimeMillis() / 200 ) % 2 == 0
+                 ? Color.RED
+                 : Color.PINK;
         }
         else if ( status == Status.WARNING ) {
-            bg = Color.ORANGE;
+            return Color.ORANGE;
         }
         else {
-            bg = Color.GREEN;
+            return Color.GREEN;
         }
-        countLabel_.setBackground( bg );
-        alert_.setStatus( status );
+    }
+
+    private Status getStatus( long millis ) {
+        if ( millis <= 0 ) {
+            return Status.DANGER;
+        }
+        else if ( millis <= 1000 * warningSec_ ) {
+            return Status.WARNING;
+        }
+        else {
+            return null;
+        }
     }
 
     private String formatMillis( long positiveMillis ) {
