@@ -48,20 +48,23 @@ public class Alerts {
                 if ( status != currentStatus_ ) {
                     String atTime = " at " + new Date() + ".\n";
                     if ( status == Status.DANGER ) {
-                        send( "Deadman danger status triggered " + atTime );
+                        send( "ALARM",
+                              "Deadman danger status triggered" + atTime );
                     }
                     else if ( status == null &&
                               currentStatus_ == Status.DANGER ) {
-                        send( "Deadman status reset to safe " + atTime );
+                        send( "reset",
+                              "Deadman status reset to safe" + atTime );
                     }
                     currentStatus_ = status;
                 }
             }
-            private void send( final String msgTxt ) {
+            private void send( String word, final String msgTxt ) {
+                final String subject = "Message from deadman (" + word + ")";
                 new Thread() {
                     public void run() {
                         try {
-                            mailer.sendMessage( "Alert from deadman", msgTxt );
+                            mailer.sendMessage( subject, msgTxt );
                             logger_.info( "Sent alert email" );
                         }
                         catch ( Throwable e ) {

@@ -14,7 +14,7 @@ public class Mailer {
     private final String[] recipients_;
     private final Properties props_;
     
-    public static final String SMTP_HOST = "smtp-srv.bris.ac.uk";
+    public static final String SMTP_HOST = "smtp-srv.bristol.ac.uk";
     public static final String SENDER = "Deadman <m.b.taylor@bristol.ac.uk>";
 
     public static final String MARK = "Mark Taylor <M.B.Taylor@bristol.ac.uk>";
@@ -29,16 +29,16 @@ public class Mailer {
         props_.put( "mail.smtp.host", smtpServer );
     }
 
-    public void sendMessage( String subject, String text )
+    public void sendMessage( String subject, String body )
             throws MessagingException {
         MimeMessage msg = new MimeMessage( Session.getInstance( props_ ) );
         msg.setFrom( SENDER );
         for ( String recipient : recipients_ ) {
             msg.setRecipients( Message.RecipientType.TO, recipient );
         }
-        msg.setSubject( "Alert from deadman" );
         msg.setSentDate( new Date() );
-        msg.setText( "Alert from deadman.\n" );
+        msg.setSubject( subject );
+        msg.setText( body );
         Transport.send( msg );
     }
 
