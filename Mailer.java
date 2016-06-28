@@ -8,6 +8,15 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
+/**
+ * Sends mail.
+ * This convenience class abstracts use of the Javamail classes
+ * (part of J2EE or available separately).
+ * Developed against javamail-1.5.5, but probably any version will do.
+ *
+ * @author   Mark Taylor
+ * @since    28 Jun 2016
+ */
 public class Mailer {
 
     private final String smtpServer_;
@@ -15,13 +24,20 @@ public class Mailer {
     private final String[] recipients_;
     private final Properties props_;
     
+    /** SMTP host available from bristol.ac.uk for bristol.ac.uk addresses. */
     public static final String SMTP_HOST = "smtp-srv.bristol.ac.uk";
+
+    /** Default sender for messages. */
     public static final String SENDER = "Deadman <m.b.taylor@bristol.ac.uk>";
 
-    public static final String MARK = "Mark Taylor <M.B.Taylor@bristol.ac.uk>";
-    public static final String BEN = "Ben Maughan <Ben.Maughan@bristol.ac.uk>";
-    public static final String RHYS = "Rhys Morris <R.Morris@bristol.ac.uk>";
-
+    /**
+     * Constructor.
+     *
+     * @param  smtpServer   SMTP server
+     * @param  sender   sender's email address
+     * @param  recipients   one or more email addresses To which
+     *                      emails will be sent
+     */
     public Mailer( String smtpServer, String sender, String[] recipients ) {
         smtpServer_ = smtpServer;
         sender_ = sender;
@@ -30,6 +46,14 @@ public class Mailer {
         props_.put( "mail.smtp.host", smtpServer );
     }
 
+    /**
+     * Sends an email.
+     * May throw an exception, though delivery failures may end up just
+     * getting returned to the sender.
+     *
+     * @param  subject  subject line
+     * @param  body    content of email
+     */
     public void sendMessage( String subject, String body )
             throws MessagingException {
         MimeMessage msg = new MimeMessage( Session.getInstance( props_ ) );

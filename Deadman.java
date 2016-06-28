@@ -12,6 +12,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+/**
+ * Harness class for the Dead Man's Timer application.
+ * Run the main method from the command line.
+ * You can use the <code>-h</code> flag for help.
+ *
+ * @author   Mark Taylor
+ * @since    28 Jun 2016
+ */
 public class Deadman {
 
     private static final Logger logger_ =
@@ -19,14 +27,19 @@ public class Deadman {
 
     public static void main( String[] args ) throws IOException {
         String usage = new StringBuffer()
-            .append( "   Usage: " )
+            .append( "\n   Usage:" )
+            .append( "\n" )
+            .append( "\n      " )
             .append( Deadman.class.getName() )
+            .append( "\n         " )
             .append( " [-help]" )
             .append( " [-limit <sec>]" )
             .append( " [-warning <sec>]" )
             .append( " [-[no]alwaysontop]" )
+            .append( "\n         " )
             .append( " [-mailed <recipient>]" )
             .append( " [-[no]audio]" )
+            .append( "\n" )
             .toString();
         int resetSec = 30 * 60;
         int warningSec = 3 * 60;
@@ -91,11 +104,13 @@ public class Deadman {
             alerts.add( Alerts.createEmailAlert( recipients ) );
         }
         Alert alert = Alerts.createMultiAlert( alerts );
-        logger_.info( "Limit: " + resetSec + "s; "
-                    + "Warning: " + warningSec + "s" );
+        logger_.info( "Limit: "
+                    + CountdownPanel.formatMillis( resetSec * 1000 )
+                    + "; Warning: "
+                    + CountdownPanel.formatMillis( warningSec * 1000 ) );
         CountdownPanel counter = new CountdownPanel( alert );
-        counter.setWarningSeconds( warningSec );
         counter.setResetSeconds( resetSec );
+        counter.setWarningSeconds( warningSec );
         Container content = frm.getContentPane();
         content.setLayout( new BorderLayout() );
         content.add( counter, BorderLayout.CENTER );
@@ -111,5 +126,6 @@ public class Deadman {
                 logger_.warning( "Always on top unsupported for window" );
             }
         }
+        counter.start();
     }
 }

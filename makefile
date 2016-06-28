@@ -16,13 +16,18 @@ JARFILE = deadman.jar
 MAINCLASS = uk.ac.bristol.star.deadman.Deadman
 JAVAMAIL_JAR = javax.mail-1.5.5.jar
 
-build: $(JARFILE)
+build: $(JARFILE) javadocs
 
 run: build
 	java -jar $(JARFILE) -limit 10 -warning 5
 
+javadocs: $(JSRC)
+	rm -rf $@
+	mkdir $@
+	javadoc -classpath $(JAVAMAIL_JAR) -quiet -d $@ $(JSRC)
+
 clean:
-	rm -rf tmp tmp.manifest $(JARFILE)
+	rm -rf tmp tmp.manifest $(JARFILE) javadocs
 
 $(JARFILE): $(JSRC) $(RESOURCES) $(JAVAMAIL_JAR)
 	rm -rf tmp

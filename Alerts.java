@@ -9,13 +9,28 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Utility class providing some Alert implementations.
+ *
+ * @author   Mark Taylor
+ * @since    28 Jun 2016
+ */
 public class Alerts {
 
+    /** Audio file for Status.WARNING siren. */
     public static final String WARNING_WAV = "onscreen.wav";
+
+    /** Audio file for Status.DANGER siren. */
     public static final String DANGER_WAV = "redalert.wav";
+
     private static final Logger logger_ =
         Logger.getLogger( Alerts.class.getName() );
 
+    /**
+     * Returns an alert that sounds audible sirens.
+     *
+     * @return  audio alert
+     */
     public static Alert createSirenAlert() throws IOException {
         Class clazz = Alert.class;
         Map<Status,SoundAlert.Sound> soundMap =
@@ -28,6 +43,11 @@ public class Alerts {
         return new SoundAlert( soundMap );
     }
 
+    /**
+     * Returns an alert that reports status changes through the logging system.
+     *
+     * @return  logger alert
+     */
     public static Alert createLoggingAlert() {
         return new Alert() {
             Status currentStatus_;
@@ -40,6 +60,13 @@ public class Alerts {
         };
     }
 
+    /**
+     * Returns an alert that sends emails to indicated recipients
+     * when status transitions to DANGER or back again.
+     *
+     * @param  recipients   one or more recipient email addresses
+     * @return   email alert
+     */
     public static Alert createEmailAlert( String[] recipients ) {
         final Mailer mailer =
             new Mailer( Mailer.SMTP_HOST, Mailer.SENDER, recipients );
@@ -78,10 +105,22 @@ public class Alerts {
         };
     }
 
+    /**
+     * Returns an alert instance which multiplexes status updates
+     * to a list of child alerts.
+     *
+     * @param  alertList  list of child alerts
+     */
     public static Alert createMultiAlert( List<Alert> alertList ) {
         return createMultiAlert( alertList.toArray( new Alert[ 0 ] ) );
     }
 
+    /**
+     * Returns an alert instance which multiplexes status updates
+     * to an array of child alerts.
+     *
+     * @param  alerts  array of child alerts
+     */
     public static Alert createMultiAlert( final Alert... alerts ) {
         return new Alert() {
             public void setStatus( Status status ) {
@@ -92,6 +131,14 @@ public class Alerts {
         };
     }
 
+    /**
+     * Returns a resource URL for a resource stored in the same place
+     * as this class.
+     *
+     * @param   relUrl  relative URL
+     * @return  usable URL, not null
+     * @throws  IOException  if resource does not exist
+     */
     private static URL getResource( String relUrl ) throws IOException {
         URL url = Alerts.class.getResource( relUrl );
         if ( url == null ) {

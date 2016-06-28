@@ -15,17 +15,30 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+/**
+ * Visual component that counts down to zero and messages a given alert
+ * instance as appropriate.
+ *
+ * @author   Mark Taylor
+ * @since    28 Jun 2016
+ */
 public class CountdownPanel extends JPanel {
 
     private final Alert alert_;
     private final JLabel countLabel_;
     private final JButton resetButton_;
+    private final Timer timer_;
     private long zeroEpoch_;
     private int resetSec_ = 30 * 60;
     private int warningSec_ = 3 * 60;
     private static final Logger logger_ =
         Logger.getLogger( CountdownPanel.class.getName() );
 
+    /**
+     * Constructor.
+     *
+     * @param  alert  object that will be notified of status updates
+     */
     public CountdownPanel( Alert alert ) {
         super( new BorderLayout() );
         alert_ = alert;
@@ -36,7 +49,7 @@ public class CountdownPanel extends JPanel {
             BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder( Color.DARK_GRAY, 8 ),
                 BorderFactory.createEmptyBorder( 10, 20, 10, 20 ) ) );
-        Timer timer = new Timer( 100, new ActionListener() {
+        timer_ = new Timer( 100, new ActionListener() {
             public void actionPerformed( ActionEvent evt ) {
                 updateTime();
             }
@@ -58,20 +71,49 @@ public class CountdownPanel extends JPanel {
         buttonLine.setBorder( BorderFactory
                              .createEmptyBorder( 20, 20, 20, 20 ) );
         add( buttonLine, BorderLayout.SOUTH );
-        resetZero();
-        timer.start();
     }
 
+    /**
+     * Resets the counter and starts the countdown.
+     */
+    public void start() {
+        resetZero();
+        timer_.start();
+    }
+
+    /**
+     * Stops the countdown.
+     */
+    public void stop() {
+        timer_.stop();
+    }
+
+    /**
+     * Sets the number of seconds from countdown start to danger status.
+     *
+     * @param  resetSec   full countdown time in seconds
+     */
     public void setResetSeconds( int resetSec ) {
         resetSec_ = resetSec;
+        if ( warningSec_ >= resetSec_ ) {
+            warningSec_ = resetSec_ / 5;
+        }
         resetZero();
     }
 
+    /**
+     * Sets the number of seconds from countdown start to warning status.
+     *
+     * @param  warningSec  countdown time to warning in seconds
+     */
     public void setWarningSeconds( int warningSec ) {
         warningSec_ = warningSec;
         resetZero();
     }
 
+    /**
+     * Resets the counter.
+     */
     public void resetZero() {
         zeroEpoch_ = System.currentTimeMillis() + resetSec_ * 1000;
         alert_.setStatus( null );
@@ -112,7 +154,14 @@ public class CountdownPanel extends JPanel {
         }
     }
 
-    private String formatMillis( long positiveMillis ) {
+    /**
+     * Formats a time in milliseconds as sexagesimal.
+     *
+     * @param  positiveMillis   a time interval in milliseconds,
+     *                          must be positive
+     * @return  formatted string
+     */
+    public static String formatMillis( long positiveMillis ) {
         long cSec = positiveMillis / 1000;
         long cMin = cSec / 60;
         long cHour = cMin / 60;
