@@ -38,19 +38,25 @@ public class SoundAlert implements Alert {
     public synchronized void setStatus( Status status ) {
         Sound sound = soundMap_.get( status );
         if ( sound != currentSound_ ) {
-            if ( currentSound_ != null ) {
-                currentSound_.stop( clip_ );
-            }
+            final Sound oldSound = currentSound_;
+            final Sound newSound = sound;
             currentSound_ = sound;
-            if ( currentSound_ != null ) {
-                try {
-                    currentSound_.start( clip_ );
+            new Thread() {
+                public void run() {
+                    if ( oldSound != null ) {
+                        oldSound.stop( clip_ );
+                    }
+                    if ( newSound != null && newSound == currentSound_ ) {
+                        try {
+                            newSound.start( clip_ );
+                        }
+                        catch ( LineUnavailableException e ) {
+                            logger_.log( Level.SEVERE,
+                                         "Cannot sound audio alarm!", e );
+                        }
+                    }
                 }
-                catch ( LineUnavailableException e ) {
-                    logger_.log( Level.SEVERE,
-                                 "Cannot sound audio alarm!", e );
-                }
-            }
+            }.start();
         }
     }
 
@@ -80,31 +86,30 @@ public class SoundAlert implements Alert {
             bufOut.close();
             buf_ = bufOut.toByteArray();
         }
-        synchronized void start( final Clip clip )
+        void start( final Clip clip )
                 throws LineUnavailableException {
-            if ( clip.isOpen() ) {
-                clip.close();
-            }
             clip.open( format_, buf_, 0, buf_.length );
             long periodMillis = 
                   (long) Math.ceil( clip.getMicrosecondLength() * 0.001 )
                 + intervalMillis_;
             TimerTask task = new TimerTask() {
                 public void run() {
-                    clip.setFramePosition( 0 );
-                    clip.start();
+                    synchronized ( clip ) {
+                        clip.setFramePosition( 0 );
+                        clip.start();
+                    }
                 }
             };
             timer_ = new Timer( "sounder", true );
             timer_.scheduleAtFixedRate( task, 0, periodMillis );
         }
-        synchronized void stop( Clip clip ) {
-            clip.stop();
-            clip.close();
+        void stop( final Clip clip ) {
             if ( timer_ != null ) {
                 timer_.cancel();
                 timer_ = null;
             }
+            clip.stop();
+            clip.close();
         }
     }
 
