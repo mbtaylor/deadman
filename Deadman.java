@@ -26,63 +26,40 @@ public class Deadman {
         Logger.getLogger( Deadman.class.getName() );
 
     public static void main( String[] args ) throws IOException {
-        String usage = new StringBuffer()
-            .append( "\n   Usage:" )
-            .append( "\n" )
-            .append( "\n      " )
-            .append( Deadman.class.getName() )
-            .append( "\n         " )
-            .append( " [-help]" )
-            .append( " [-limit <sec>]" )
-            .append( " [-warning <sec>]" )
-            .append( " [-[no]alwaysontop]" )
-            .append( "\n         " )
-            .append( " [-mailed <recipient>]" )
-            .append( " [-[no]audio]" )
-            .append( "\n" )
-            .toString();
-        int resetSec = 30 * 60;
-        int warningSec = 3 * 60;
-        boolean alwaysOnTop = true;
-        boolean isAudio = true;
-        List<String> mailedList = new ArrayList<String>();
+        StringBuffer ubuf = new StringBuffer()
+              .append( "\n   Usage:" )
+              .append( "\n      " )
+              .append( Deadman.class.getName() )
+              .append( " <name>=<value> ..." )
+              .append( "\n\n   Options:" );
+        ConfigKey<?>[] keys = Config.KEYS;
+        for ( ConfigKey<?> key : keys ) {
+            ubuf.append( "\n      " )
+                .append( key.toString() );
+        }
+        String usage = ubuf.toString();
+        ConfigMap cmap = new ConfigMap();
         List<String> argList = new ArrayList<String>( Arrays.asList( args ) );
         for ( Iterator<String> it = argList.iterator(); it.hasNext(); ) {
             String arg = it.next();
+            int ieq = arg.indexOf( '=' );
             if ( arg.startsWith( "-h" ) ||
                  arg.startsWith( "--h" ) ) {
                 it.remove();
                 System.err.println( usage );
                 System.exit( 0 );
             }
-            else if ( "-limit".equals( arg ) && it.hasNext() ) {
+            else if ( ieq > 0 ) {
                 it.remove();
-                resetSec = Integer.parseInt( it.next() );
-                it.remove();
-            }
-            else if ( "-warning".equals( arg ) && it.hasNext() ) {
-                it.remove();
-                warningSec = Integer.parseInt( it.next() );
-                it.remove();
-            }
-            else if ( "-alwaysontop".equals( arg ) ) {
-                it.remove();
-                alwaysOnTop = true;
-            }
-            else if ( "-noalwaysontop".equals( arg ) ) {
-                it.remove();
-                alwaysOnTop = false;
-            }
-            else if ( "-mailed".equals( arg ) && it.hasNext() ) {
-                it.remove();
-                mailedList.add( it.next() );
-                it.remove();
-            }
-            else if ( "-audio".equals( arg ) ) {
-                isAudio = true;
-            }
-            else if ( "-noaudio".equals( arg ) ) {
-                isAudio = false;
+                String name = arg.substring( 0, ieq );
+                String value = arg.substring( ieq + 1 );
+                try {
+                    cmap.assign( name, value, keys );
+                }
+                catch ( ConfigException e ) {
+                    System.err.println( e.getMessage() );
+                    System.exit( 1 );
+                }
             }
             else {
                 System.err.println( usage );
@@ -93,15 +70,20 @@ public class Deadman {
             System.err.println( usage );
             System.exit( 1 );
         }
+        boolean isAudio = cmap.get( Config.AUDIO ).booleanValue();
+        String[] emails = cmap.get( Config.EMAILS );
+        int resetSec = cmap.get( Config.RESET_SEC ).intValue();
+        int warningSec = cmap.get( Config.WARNING_SEC ).intValue();
+        boolean alwaysOnTop = cmap.get( Config.ONTOP ).booleanValue();
+
         JFrame frm = new JFrame();
         List<Alert> alerts = new ArrayList<Alert>();
         if ( isAudio ) {
             alerts.add( Alerts.createSirenAlert() );
         }
         alerts.add( Alerts.createLoggingAlert() );
-        if ( mailedList.size() > 0 ) {
-            String[] recipients = mailedList.toArray( new String[ 0 ] );
-            alerts.add( Alerts.createEmailAlert( recipients ) );
+        if ( emails.length > 0 ) {
+            alerts.add( Alerts.createEmailAlert( emails ) );
         }
         Alert alert = Alerts.createMultiAlert( alerts );
         logger_.info( "Limit: "

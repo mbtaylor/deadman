@@ -2,6 +2,10 @@
 JSRC = \
        Alert.java \
        Alerts.java \
+       Config.java \
+       ConfigException.java \
+       ConfigMap.java \
+       ConfigKey.java \
        CountdownPanel.java \
        Deadman.java \
        Mailer.java \
@@ -19,7 +23,7 @@ JAVAMAIL_JAR = javax.mail-1.5.5.jar
 build: $(JARFILE) javadocs
 
 run: build
-	java -jar $(JARFILE) -limit 10 -warning 5
+	java -jar $(JARFILE) reset=10 warning=5
 
 javadocs: $(JSRC)
 	rm -rf $@
