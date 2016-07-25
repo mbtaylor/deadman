@@ -69,8 +69,14 @@ public class Alerts {
      */
     public static Alert createEmailAlert( final Mailer mailer ) {
         return new Alert() {
+            boolean isStarted_;
             Status currentStatus_;
             public void setStatus( Status status ) {
+                if ( ! isStarted_ ) {
+                    isStarted_ = true;
+                    String atTime = " at " + new Date() + ".\n";
+                    send( "startup", "Deadman started" + atTime );
+                }
                 if ( status != currentStatus_ ) {
                     String atTime = " at " + new Date() + ".\n";
                     if ( status == Status.DANGER ) {
