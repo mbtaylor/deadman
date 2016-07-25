@@ -64,12 +64,10 @@ public class Alerts {
      * Returns an alert that sends emails to indicated recipients
      * when status transitions to DANGER or back again.
      *
-     * @param  recipients   one or more recipient email addresses
+     * @param  mailer  mailer instance
      * @return   email alert
      */
-    public static Alert createEmailAlert( String[] recipients ) {
-        final Mailer mailer =
-            new Mailer( Mailer.SMTP_HOST, Mailer.SENDER, recipients );
+    public static Alert createEmailAlert( final Mailer mailer ) {
         return new Alert() {
             Status currentStatus_;
             public void setStatus( Status status ) {

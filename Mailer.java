@@ -24,12 +24,6 @@ public class Mailer {
     private final String[] recipients_;
     private final Properties props_;
     
-    /** SMTP host available from bristol.ac.uk for bristol.ac.uk addresses. */
-    public static final String SMTP_HOST = "smtp-srv.bristol.ac.uk";
-
-    /** Default sender for messages. */
-    public static final String SENDER = "Deadman <m.b.taylor@bristol.ac.uk>";
-
     /**
      * Constructor.
      *
@@ -57,7 +51,7 @@ public class Mailer {
     public void sendMessage( String subject, String body )
             throws MessagingException {
         MimeMessage msg = new MimeMessage( Session.getInstance( props_ ) );
-        msg.setFrom( SENDER );
+        msg.setFrom( sender_ );
         for ( String recipient : recipients_ ) {
             msg.setRecipients( Message.RecipientType.TO, recipient );
         }
@@ -69,7 +63,10 @@ public class Mailer {
 
     public static void main( String[] args ) throws MessagingException {
         String[] recipients = new String[] { args[ 0 ] };
-        Mailer mailer = new Mailer( SMTP_HOST, SENDER, recipients );
+        ConfigMap cmap = new ConfigMap();
+        Mailer mailer = new Mailer( cmap.get( Config.SMTP_SERVER ),
+                                    cmap.get( Config.SMTP_SENDER ),
+                                    recipients );
         mailer.sendMessage( "Test from mailer", "It's a test.\n" );
     }
 }
