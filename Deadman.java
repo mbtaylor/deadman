@@ -32,6 +32,9 @@ public class Deadman {
 
     public static void main( String[] args ) throws IOException {
 
+        /* Configure logging. */
+        Logging.configureLogger( Logger.getLogger( "" ) );
+
         /* Prepare usage message. */
         StringBuffer ubuf = new StringBuffer()
               .append( "\n   Usage:" )

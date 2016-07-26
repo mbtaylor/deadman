@@ -8,6 +8,7 @@ JSRC = \
        ConfigKey.java \
        CountdownPanel.java \
        Deadman.java \
+       Logging.java \
        Mailer.java \
        SoundAlert.java \
        Status.java \
