@@ -43,6 +43,9 @@ public class DmConfig {
     /** Key giving From address for email messages. */
     public static final ConfigKey<String> SMTP_SENDER;
 
+    /** Key indicating whether email contacts are required. */
+    public static final ConfigKey<Boolean> REQUIRE_EMAIL;
+
     /**
      * Known configuration keys.
      */
@@ -58,6 +61,7 @@ public class DmConfig {
         SMTP_SENDER =
             new StringConfigKey( "mailSender",
                                  "Deadman <m.b.taylor@bristol.ac.uk>" ),
+        REQUIRE_EMAIL = new BooleanConfigKey( "requireEmail", true ),
     };
 
     /**

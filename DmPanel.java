@@ -61,6 +61,7 @@ public class DmPanel extends JPanel {
         boolean alwaysOnTop = cmap.get( DmConfig.ONTOP ).booleanValue();
         final String smtpServer = cmap.get( DmConfig.SMTP_SERVER );
         final String sender = cmap.get( DmConfig.SMTP_SENDER ); 
+        final boolean requireEmail = cmap.get( DmConfig.REQUIRE_EMAIL );
 
         /* Prepare alerts according to configuration.
          * Note the alerts list can be altered later to adjust the
@@ -103,7 +104,8 @@ public class DmPanel extends JPanel {
                 String[] emails = initCmap.get( mailsKey );
 
                 /* Check the form is filled in completely enough. */
-                if ( hasAllValues( initCmap, requiredInitKeys ) ) {
+                if ( hasAllValues( initCmap, requiredInitKeys ) &&
+                     ( emails.length > 0 || ! requireEmail ) ) {
 
                     /* If so, perform some additional initialisation.
                      * In particular record the user name and mailer defined
