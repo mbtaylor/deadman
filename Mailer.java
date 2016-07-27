@@ -76,7 +76,10 @@ public class Mailer {
     public void sendMessage( String topic, String body ) {
         try { 
             attemptSendMessage( topic, body );
-            logger_.info( "Sent email: " + topic );
+            int nr = recipients_.length;
+            logger_.info( "Sent email to " + nr + " "
+                        + ( nr == 1 ? "address" : "addresses" )
+                        + ": " + topic );
         }
         catch ( MessagingException e ) {
             logger_.log( Level.SEVERE,

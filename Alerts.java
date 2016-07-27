@@ -78,7 +78,7 @@ public class Alerts {
                     }
                     else if ( status == null &&
                               currentStatus_ == Status.DANGER ) {
-                        send( "reset",
+                        send( "Reset",
                               "Deadman status reset to safe" + atTime );
                     }
                     currentStatus_ = status;
