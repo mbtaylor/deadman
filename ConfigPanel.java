@@ -30,7 +30,7 @@ public class ConfigPanel extends JPanel {
         controls_ = new ArrayList<ConfigControl<?>>();
         GridBagLayout gridder = new GridBagLayout();
         GridBagConstraints cons = new GridBagConstraints();
-        cons.anchor = GridBagConstraints.WEST;
+        cons.anchor = GridBagConstraints.NORTHWEST;
         cons.fill = GridBagConstraints.HORIZONTAL;
         cons.gridy = 0;
         cons.insets = new Insets( 5, 0, 0, 0 );

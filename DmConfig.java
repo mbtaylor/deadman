@@ -1,6 +1,12 @@
 package uk.ac.bristol.star.deadman;
 
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
@@ -64,6 +70,23 @@ public class DmConfig {
     public static ConfigKey<String> createStringKey( String name,
                                                      String dflt ) {
         return new StringConfigKey( name, dflt );
+    }
+
+    /**
+     * Creates a string-array-valued key with a GUI control that lets you
+     * add a single entry to the default list.
+     *
+     * @param   name  key name
+     * @param   dflt  default value
+     * @return  new key
+     */
+    public static ConfigKey<String[]> createAdd1StringsKey( String name,
+                                                            String[] dflt ) {
+        return new StringsConfigKey( name, ',', dflt ) {
+            public ConfigControl<String[]> createControl() {
+                return new Add1StringsControl( this );
+            }
+        };
     }
 
     /**
@@ -235,6 +258,84 @@ public class DmConfig {
                 textField_.setText( key_.toString( dflt ) );
                 return dflt;
             }
+        }
+    }
+
+    /**
+     * GUI control that gives you checkboxes for including all the
+     * default values, and the option to add one new entry.
+     */
+    private static class Add1StringsControl implements ConfigControl<String[]> {
+        private final ConfigKey<String[]> key_;
+        private final int nd_;
+        private final String[] dflts_;
+        private final JCheckBox[] checkBoxes_;
+        private final JTextField textField_;
+        private final JComponent box_;
+
+        /**
+         * Constructor.
+         *
+         * @param  key
+         */
+        public Add1StringsControl( ConfigKey<String[]> key ) {
+            key_ = key;
+            dflts_ = key.getDefaultValue();
+            nd_ = dflts_.length;
+            checkBoxes_ = new JCheckBox[ nd_ ];
+            box_ = new Box( BoxLayout.Y_AXIS ) {
+                @Override
+                public void setEnabled( boolean isEnabled ) {
+                    super.setEnabled( isEnabled );
+                    for ( JCheckBox cb : checkBoxes_ ) {
+                        cb.setEnabled( isEnabled );
+                    }
+                    textField_.setEnabled( isEnabled );
+                }
+            };
+            for ( int i = 0; i < nd_; i++ ) {
+                JComponent line = Box.createHorizontalBox();
+                JCheckBox checkBox = new JCheckBox( dflts_[ i ] );
+                line.add( checkBox );
+                line.add( Box.createHorizontalGlue() );
+                checkBoxes_[ i ] = checkBox;
+                box_.add( line );
+                box_.add( Box.createVerticalStrut( 2 ) );
+            }
+            textField_ = new JTextField();
+            box_.add( textField_ );
+            box_.setBorder(
+                BorderFactory.createCompoundBorder(
+                    BorderFactory.createEtchedBorder(),
+                    BorderFactory.createEmptyBorder( 2, 2, 2, 2 ) ) );
+        }
+        public ConfigKey<String[]> getKey() {
+            return key_;
+        }
+        public JComponent getComponent() {
+            return box_;
+        }
+        public void setValue( String[] txts ) {
+            List<String> txtList =
+                new ArrayList<String>( Arrays.asList( txts ) );
+            for ( int i = 0; i < nd_; i++ ) {
+                checkBoxes_[ i ].setSelected( txtList.remove( dflts_[ i ] ) );
+            }
+            textField_.setText( txtList.size() > 0 ? txtList.remove( 0 )
+                                                   : null );
+        }
+        public String[] getValue() {
+            List<String> list = new ArrayList<String>();
+            for ( int i = 0; i < nd_; i++ ) {
+                if ( checkBoxes_[ i ].isSelected() ) {
+                    list.add( dflts_[ i ] );
+                }
+            }
+            String fieldTxt = textField_.getText();
+            if ( fieldTxt != null && fieldTxt.trim().length() > 0 ) {
+                list.add( fieldTxt );
+            }
+            return list.toArray( new String[ 0 ] );
         }
     }
 }
