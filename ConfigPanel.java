@@ -3,6 +3,7 @@ package uk.ac.bristol.star.deadman;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
@@ -32,6 +33,7 @@ public class ConfigPanel extends JPanel {
         cons.anchor = GridBagConstraints.WEST;
         cons.fill = GridBagConstraints.HORIZONTAL;
         cons.gridy = 0;
+        cons.insets = new Insets( 5, 0, 0, 0 );
         JComponent panel = new JPanel( gridder );
         ConfigMap dfltsMap = new ConfigMap();
         for ( ConfigKey<?> key : keys ) {

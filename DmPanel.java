@@ -94,6 +94,7 @@ public class DmPanel extends JPanel {
         itCounter_ = addTab( tabber_, "Counter", countPanel );
         itExiter_ = addTab( tabber_, "Exit", withCounter( exiter_ ) );
         tabber_.setEnabledAt( itCounter_, false );
+        tabber_.setEnabledAt( itExiter_, false );
         add( tabber_, BorderLayout.CENTER );
     }
 
@@ -105,6 +106,7 @@ public class DmPanel extends JPanel {
         userName_ = initer_.getUserName();
         initer_.setEnabled( false );
         tabber_.setEnabledAt( itCounter_, true );
+        tabber_.setEnabledAt( itExiter_, true );
         tabber_.setSelectedIndex( itCounter_ );
         Window win = SwingUtilities.getWindowAncestor( this );
         if ( win instanceof JFrame ) {

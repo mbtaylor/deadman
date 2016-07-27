@@ -32,7 +32,7 @@ JAVAMAIL_JAR = javax.mail-1.5.5.jar
 build: $(JARFILE) javadocs
 
 run: build
-	java -jar $(JARFILE) reset=10 warning=5
+	java -jar $(JARFILE)
 
 deadman.props: $(JARFILE)
 	java -jar $(JARFILE) -writeconfig >$@
