@@ -50,6 +50,16 @@ public class ExitPanel extends FormPanel {
     }
 
     /**
+     * Returns the content of the comment field that the user may have
+     * filled in.
+     *
+     * @return  comment text
+     */
+    public String getUserComment() {
+        return getConfigPanel().getValues().get( COMMENT_KEY );
+    }
+
+    /**
      * Constructs a list of boolean config keys, each with a given name
      * and a common default value.
      *

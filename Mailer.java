@@ -51,14 +51,48 @@ public class Mailer {
     }
 
     /**
-     * Sends an email.
+     * Sends a message asynchronously.  Returns immediately without error.
+     * Success or failure is logged through the logging system.
+     *
+     * @param  topic   short summary of message (included in Subject line)
+     * @param  body    content of email
+     */
+    public void scheduleSendMessage( final String topic, final String body ) {
+        new Thread( "Mailer" ) {
+            public void run() {
+                sendMessage( topic, body );
+            }
+        }.start();
+    }
+
+    /**
+     * Makes a best effort to send an email synchronously.
+     * Returns without error, success or failure is logged through the
+     * logging system.
+     *
+     * @param  topic   short summary of message (included in Subject line)
+     * @param  body    content of email
+     */
+    public void sendMessage( String topic, String body ) {
+        try { 
+            attemptSendMessage( topic, body );
+            logger_.info( "Sent email: " + topic );
+        }
+        catch ( MessagingException e ) {
+            logger_.log( Level.SEVERE,
+                         "Failed to send email: " + topic, e );
+        }
+    }
+
+    /**
+     * Attempts to send an email synchronously.
      * May throw an exception, though delivery failures may end up just
      * getting returned to the sender.
      *
      * @param  topic   short summary of message (included in Subject line)
      * @param  body    content of email
      */
-    public void sendMessage( String topic, String body )
+    public void attemptSendMessage( String topic, String body )
             throws MessagingException {
         MimeMessage msg = new MimeMessage( Session.getInstance( props_ ) );
         msg.setFrom( sender_ );
@@ -71,34 +105,12 @@ public class Mailer {
         Transport.send( msg );
     }
 
-    /**
-     * Sends a message asynchronously.  Returns immediately without error.
-     * Success or failure is logged through the logging system.
-     *
-     * @param  topic   short summary of message (included in Subject line)
-     * @param  body    content of email
-     */
-    public void scheduleSendMessage( final String topic, final String body ) {
-        new Thread( "Mailer" ) {
-            public void run() {
-                try { 
-                    sendMessage( topic, body );
-                    logger_.info( "Sent email: " + topic );
-                }
-                catch ( MessagingException e ) {
-                    logger_.log( Level.SEVERE,
-                                 "Failed to send email: " + topic, e );
-                }
-            }
-        }.start();
-    }
-
     public static void main( String[] args ) throws MessagingException {
         String[] recipients = new String[] { args[ 0 ] };
         ConfigMap cmap = new ConfigMap();
         Mailer mailer = new Mailer( cmap.get( DmConfig.SMTP_SERVER ),
                                     cmap.get( DmConfig.SMTP_SENDER ),
                                     recipients, "[mailer] " );
-        mailer.sendMessage( "Test", "It's a test.\n" );
+        mailer.attemptSendMessage( "Test", "It's a test.\n" );
     }
 }

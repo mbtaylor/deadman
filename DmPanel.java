@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -26,6 +27,7 @@ public class DmPanel extends JPanel {
     private final int itIniter_;
     private final int itCounter_;
     private final int itExiter_;
+    private final Mailer mailer_;
     private String userName_;
 
     /**
@@ -48,20 +50,19 @@ public class DmPanel extends JPanel {
             alerts.add( Alerts.createSirenAlert() );
         }
         alerts.add( Alerts.createLoggingAlert() );
-        final Mailer mailer;
         if ( emails.length > 0 ) {
             String smtpServer = cmap.get( DmConfig.SMTP_SERVER );
             String sender = cmap.get( DmConfig.SMTP_SENDER ); 
-            mailer = new Mailer( smtpServer, sender, emails, "[deadman] " );
-            alerts.add( Alerts.createEmailAlert( mailer ) );
+            mailer_ = new Mailer( smtpServer, sender, emails, "[deadman] " );
+            alerts.add( Alerts.createEmailAlert( mailer_ ) );
         }
         else {
-            mailer = null; 
+            mailer_ = null; 
         }   
         Alert alert = Alerts.createMultiAlert( alerts );
 
         /* Set up initialiser panel. */
-        initer_ = new InitPanel( mailer, new Runnable() {
+        initer_ = new InitPanel( mailer_, new Runnable() {
             public void run() {
                 initialised();
             }
@@ -106,6 +107,21 @@ public class DmPanel extends JPanel {
      * exit the application.
      */
     private void finished() {
+        counter_.stop();
+        tabber_.setEnabledAt( itCounter_, false );
+        if ( mailer_ != null ) {
+            String topic = "Exit by " + userName_;
+            String body = new StringBuffer()
+                .append( "Deadman application exited at " )
+                .append( new Date() )
+                .append( "\n" )
+                .append( "User comment:\n" )
+                .append( "   " )
+                .append( exiter_.getUserComment() )
+                .append( "\n" )
+                .toString();
+            mailer_.sendMessage( topic, body );
+        }
         Window win = SwingUtilities.getWindowAncestor( this );
         win.dispose();
     }
