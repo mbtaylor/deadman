@@ -1,5 +1,10 @@
 package uk.ac.bristol.star.deadman;
 
+import java.awt.Toolkit;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+
 /**
  * Provides application-specific configuration keys.
  *
@@ -50,6 +55,18 @@ public class Config {
     };
 
     /**
+     * Creates a string-valued key.
+     *
+     * @param   name  key name
+     * @param   dflt  default value
+     * @return  new key
+     */
+    public static ConfigKey<String> createStringKey( String name,
+                                                     String dflt ) {
+        return new StringConfigKey( name, dflt );
+    }
+
+    /**
      * Config key for integer values.
      */
     private static class IntegerConfigKey extends ConfigKey<Integer> {
@@ -66,6 +83,9 @@ public class Config {
         }
         public String toString( Integer val ) {
             return val.toString();
+        }
+        public ConfigControl<Integer> createControl() {
+            return new TextFieldControl<Integer>( this );
         }
     }
 
@@ -92,6 +112,23 @@ public class Config {
         public String toString( Boolean value ) {
             return Boolean.TRUE.equals( value ) ? "true" : "false";
         }
+        public ConfigControl<Boolean> createControl() {
+            final JCheckBox checkBox = new JCheckBox();
+            return new ConfigControl<Boolean>() {
+                public ConfigKey<Boolean> getKey() {
+                    return BooleanConfigKey.this;
+                }
+                public JComponent getComponent() {
+                    return checkBox;
+                }
+                public void setValue( Boolean value ) {
+                    checkBox.setSelected( Boolean.TRUE.equals( value ) );
+                }
+                public Boolean getValue() {
+                    return Boolean.valueOf( checkBox.isSelected() );
+                }
+            };
+        }
     }
 
     /**
@@ -106,6 +143,9 @@ public class Config {
         }
         public String toString( String value ) {
             return value;
+        }
+        public ConfigControl<String> createControl() {
+            return new TextFieldControl<String>( this );
         }
     }
 
@@ -138,6 +178,51 @@ public class Config {
                 sbuf.append( value[ i ] );
             }
             return sbuf.toString();
+        }
+        public ConfigControl<String[]> createControl() {
+            return new TextFieldControl<String[]>( this );
+        }
+    }
+
+    /**
+     * GUI Control based on a JTextField.
+     */
+    private static class TextFieldControl<T> implements ConfigControl<T> {
+        private final ConfigKey<T> key_;
+        private final JTextField textField_;
+
+        /**
+         * Constructor.
+         *
+         * @param  key   key
+         */
+        public TextFieldControl( ConfigKey<T> key ) {
+            key_ = key;
+            textField_ = new JTextField();
+        }
+
+        public ConfigKey<T> getKey() {
+            return key_;
+        }
+
+        public JComponent getComponent() {
+            return textField_;
+        }
+
+        public void setValue( T value ) {
+            textField_.setText( key_.toString( value ) );
+        }
+
+        public T getValue() {
+            try {
+                return key_.fromString( textField_.getText() );
+            }
+            catch ( ConfigException e ) {
+                T dflt = key_.getDefaultValue();
+                Toolkit.getDefaultToolkit().beep();
+                textField_.setText( key_.toString( dflt ) );
+                return dflt;
+            }
         }
     }
 }

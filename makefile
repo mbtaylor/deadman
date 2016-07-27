@@ -3,6 +3,7 @@ JSRC = \
        Alert.java \
        Alerts.java \
        Config.java \
+       ConfigControl.java \
        ConfigException.java \
        ConfigMap.java \
        ConfigKey.java \

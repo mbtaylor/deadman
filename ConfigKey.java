@@ -71,6 +71,14 @@ public abstract class ConfigKey<T> {
      */
     public abstract String toString( T value );
 
+    /**
+     * Creates a GUI control that can be used to acquire values
+     * for this key.
+     *
+     * @return   new config control
+     */
+    public abstract ConfigControl<T> createControl();
+
     @Override
     public String toString() {
         return new StringBuffer()
