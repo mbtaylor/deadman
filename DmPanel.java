@@ -26,7 +26,7 @@ public class DmPanel extends JPanel {
 
     private final JTabbedPane tabber_;
     private final InitPanel initer_;
-    private final CountdownPanel counter_;
+    private final CountdownModel counter_;
     private final ExitPanel exiter_;
     private final int itIniter_;
     private final int itCounter_;
@@ -73,8 +73,10 @@ public class DmPanel extends JPanel {
         } );
 
         /* Set up counter panel. */
-        counter_ = new CountdownPanel( alert );
-        counter_.setBorder( BorderFactory.createEmptyBorder( 24, 24, 24, 24 ) );
+        counter_ = new CountdownModel( alert );
+        CountdownPanel countPanel = new CountdownPanel( counter_ );
+        countPanel.setBorder( BorderFactory
+                             .createEmptyBorder( 24, 24, 24, 24 ) );
         counter_.setResetSeconds( resetSec );
         counter_.setWarningSeconds( warningSec );
 
@@ -88,7 +90,7 @@ public class DmPanel extends JPanel {
         /* Place GUI components in a tabber. */
         tabber_ = new JTabbedPane();
         itIniter_ = addTab( tabber_, "Initialise", initer_ );
-        itCounter_ = addTab( tabber_, "Counter", counter_ );
+        itCounter_ = addTab( tabber_, "Counter", countPanel );
         itExiter_ = addTab( tabber_, "Exit", exiter_ );
         tabber_.setEnabledAt( itCounter_, false );
         add( tabber_, BorderLayout.CENTER );
