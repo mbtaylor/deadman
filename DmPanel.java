@@ -1,10 +1,13 @@
 package uk.ac.bristol.star.deadman;
 
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 /**
  * Main GUI panel for Deadman application.
@@ -13,6 +16,12 @@ import javax.swing.JPanel;
  * @since    27 Jul 2016
  */
 public class DmPanel extends JPanel {
+
+    private final JTabbedPane tabber_;
+    private final InitPanel initer_;
+    private final CountdownPanel counter_;
+    private final int itIniter_;
+    private final int itCounter_;
 
     /**
      * Constructor.
@@ -46,12 +55,51 @@ public class DmPanel extends JPanel {
         }   
         Alert alert = Alerts.createMultiAlert( alerts );
 
-        /* Set up GUI. */
-        CountdownPanel counter = new CountdownPanel( alert );
-        counter.setBorder( BorderFactory.createEmptyBorder( 24, 24, 24, 24 ) );
-        counter.setResetSeconds( resetSec );
-        counter.setWarningSeconds( warningSec );
-        add( counter );
-        counter.start();
+        /* Set up initialiser panel. */
+        initer_ = new InitPanel( mailer, new Runnable() {
+            public void run() {
+                initialised();
+            }
+        } );
+
+        /* Set up counter panel. */
+        counter_ = new CountdownPanel( alert );
+        counter_.setBorder( BorderFactory.createEmptyBorder( 24, 24, 24, 24 ) );
+        counter_.setResetSeconds( resetSec );
+        counter_.setWarningSeconds( warningSec );
+
+        /* Place GUI components in a tabber. */
+        tabber_ = new JTabbedPane();
+        itIniter_ = addTab( tabber_, "Initialise", initer_ );
+        itCounter_ = addTab( tabber_, "Counter", counter_ );
+        tabber_.setEnabledAt( itCounter_, false );
+        add( tabber_, BorderLayout.CENTER );
+    }
+
+    /**
+     * Invoked when initialisation is complete and the countdown
+     * is about to start.
+     */
+    private void initialised() {
+        initer_.setEnabled( false );
+        tabber_.setEnabledAt( itCounter_, true );
+        tabber_.setSelectedIndex( itCounter_ );
+        counter_.start();
+    }
+
+    /**
+     * Utility method that adds a component to a tabber and records its
+     * tab index.
+     *
+     * @param  tabber   tabber
+     * @param  label    label for tab
+     * @param  comp     tab content component
+     * @return   index of added tab
+     */
+    private static int addTab( JTabbedPane tabber, String label,
+                               JComponent comp ) {
+        int index = tabber.getTabCount();
+        tabber.add( label, comp );
+        return index;
     }
 }

@@ -11,6 +11,8 @@ JSRC = \
        Deadman.java \
        DmConfig.java \
        DmPanel.java \
+       FormPanel.java \
+       InitPanel.java \
        Logging.java \
        Mailer.java \
        SoundAlert.java \
