@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 /**
@@ -115,46 +113,20 @@ public class Deadman {
             }
         }
 
-        /* Acquire configuration items. */
-        boolean isAudio = cmap.get( Config.AUDIO ).booleanValue();
-        String[] emails = cmap.get( Config.EMAILS );
-        int resetSec = cmap.get( Config.RESET_SEC ).intValue();
-        int warningSec = cmap.get( Config.WARNING_SEC ).intValue();
-        boolean alwaysOnTop = cmap.get( Config.ONTOP ).booleanValue();
-
-        /* Prepare alerts according to configuration. */
-        List<Alert> alerts = new ArrayList<Alert>();
-        if ( isAudio ) {
-            alerts.add( Alerts.createSirenAlert() );
-        }
-        alerts.add( Alerts.createLoggingAlert() );
-        final Mailer mailer;
-        if ( emails.length > 0 ) {
-            String smtpServer = cmap.get( Config.SMTP_SERVER );
-            String sender = cmap.get( Config.SMTP_SENDER );
-            mailer = new Mailer( smtpServer, sender, emails, "[deadman] " );
-            alerts.add( Alerts.createEmailAlert( mailer ) );
-        }
-        else {
-            mailer = null;
-        }
-        Alert alert = Alerts.createMultiAlert( alerts );
+        /* Log configuration. */
+        logger_.info( "Initial configuration: ");
         for ( String line : cmap.getPropertyLines( keys ) ) {
             logger_.info( line );
         }
 
-        /* Set up GUI. */
+        /* Set up GUI and post window. */
+        DmPanel dmPanel = new DmPanel( cmap );
         JFrame frm = new JFrame();
-        CountdownPanel counter = new CountdownPanel( alert );
-        counter.setResetSeconds( resetSec );
-        counter.setWarningSeconds( warningSec );
         Container content = frm.getContentPane();
         content.setLayout( new BorderLayout() );
-        content.add( counter, BorderLayout.CENTER );
-        counter.setBorder( BorderFactory.createEmptyBorder( 24, 24, 24, 24 ) );
-        frm.pack();
+        content.add( dmPanel, BorderLayout.CENTER );
         frm.setLocationRelativeTo( null );
-        frm.setVisible( true );
+        boolean alwaysOnTop = cmap.get( Config.ONTOP ).booleanValue();
         if ( alwaysOnTop ) {
             if ( frm.isAlwaysOnTopSupported() ) {
                 frm.setAlwaysOnTop( true );
@@ -163,8 +135,7 @@ public class Deadman {
                 logger_.warning( "Always on top unsupported for window" );
             }
         }
-
-        /* Start running. */
-        counter.start();
+        frm.pack();
+        frm.setVisible( true );
     }
 }
