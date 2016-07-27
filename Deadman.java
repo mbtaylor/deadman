@@ -42,7 +42,7 @@ public class Deadman {
               .append( " [-writeconfig]" )
               .append( " <name>=<value> ..." )
               .append( "\n\n   Options:" );
-        ConfigKey<?>[] keys = Config.KEYS;
+        ConfigKey<?>[] keys = DmConfig.KEYS;
         for ( ConfigKey<?> key : keys ) {
             ubuf.append( "\n      " )
                 .append( key.toString() );
@@ -87,7 +87,7 @@ public class Deadman {
         }
 
         /* Read config file if present. */
-        File file = new File( cmap.get( Config.CONFIG_FILE ) );
+        File file = new File( cmap.get( DmConfig.CONFIG_FILE ) );
         if ( file.exists() ) {
             try {
                 logger_.info( "Loading properties from file " + file );
@@ -126,7 +126,7 @@ public class Deadman {
         content.setLayout( new BorderLayout() );
         content.add( dmPanel, BorderLayout.CENTER );
         frm.setLocationRelativeTo( null );
-        boolean alwaysOnTop = cmap.get( Config.ONTOP ).booleanValue();
+        boolean alwaysOnTop = cmap.get( DmConfig.ONTOP ).booleanValue();
         if ( alwaysOnTop ) {
             if ( frm.isAlwaysOnTopSupported() ) {
                 frm.setAlwaysOnTop( true );

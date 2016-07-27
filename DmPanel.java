@@ -22,11 +22,11 @@ public class DmPanel extends JPanel {
     public DmPanel( ConfigMap cmap ) throws IOException {
 
         /* Acquire configuration items. */
-        boolean isAudio = cmap.get( Config.AUDIO ).booleanValue();
-        String[] emails = cmap.get( Config.EMAILS );
-        int resetSec = cmap.get( Config.RESET_SEC ).intValue();
-        int warningSec = cmap.get( Config.WARNING_SEC ).intValue();
-        boolean alwaysOnTop = cmap.get( Config.ONTOP ).booleanValue();
+        boolean isAudio = cmap.get( DmConfig.AUDIO ).booleanValue();
+        String[] emails = cmap.get( DmConfig.EMAILS );
+        int resetSec = cmap.get( DmConfig.RESET_SEC ).intValue();
+        int warningSec = cmap.get( DmConfig.WARNING_SEC ).intValue();
+        boolean alwaysOnTop = cmap.get( DmConfig.ONTOP ).booleanValue();
 
         /* Prepare alerts according to configuration. */
         List<Alert> alerts = new ArrayList<Alert>();
@@ -36,8 +36,8 @@ public class DmPanel extends JPanel {
         alerts.add( Alerts.createLoggingAlert() );
         final Mailer mailer;
         if ( emails.length > 0 ) {
-            String smtpServer = cmap.get( Config.SMTP_SERVER );
-            String sender = cmap.get( Config.SMTP_SENDER ); 
+            String smtpServer = cmap.get( DmConfig.SMTP_SERVER );
+            String sender = cmap.get( DmConfig.SMTP_SENDER ); 
             mailer = new Mailer( smtpServer, sender, emails, "[deadman] " );
             alerts.add( Alerts.createEmailAlert( mailer ) );
         }

@@ -11,7 +11,7 @@ import javax.swing.JTextField;
  * @author   Mark Taylor
  * @since    25 Jul 2016
  */
-public class Config {
+public class DmConfig {
 
     /** Key for configuration properties filename. */
     public static final ConfigKey<String> CONFIG_FILE;

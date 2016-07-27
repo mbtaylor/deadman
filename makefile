@@ -2,13 +2,13 @@
 JSRC = \
        Alert.java \
        Alerts.java \
-       Config.java \
        ConfigControl.java \
        ConfigException.java \
        ConfigMap.java \
        ConfigKey.java \
        CountdownPanel.java \
        Deadman.java \
+       DmConfig.java \
        DmPanel.java \
        Logging.java \
        Mailer.java \

@@ -96,8 +96,8 @@ public class Mailer {
     public static void main( String[] args ) throws MessagingException {
         String[] recipients = new String[] { args[ 0 ] };
         ConfigMap cmap = new ConfigMap();
-        Mailer mailer = new Mailer( cmap.get( Config.SMTP_SERVER ),
-                                    cmap.get( Config.SMTP_SENDER ),
+        Mailer mailer = new Mailer( cmap.get( DmConfig.SMTP_SERVER ),
+                                    cmap.get( DmConfig.SMTP_SENDER ),
                                     recipients, "[mailer] " );
         mailer.sendMessage( "Test", "It's a test.\n" );
     }
