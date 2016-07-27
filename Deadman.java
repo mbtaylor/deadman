@@ -132,7 +132,7 @@ public class Deadman {
         if ( emails.length > 0 ) {
             String smtpServer = cmap.get( Config.SMTP_SERVER );
             String sender = cmap.get( Config.SMTP_SENDER );
-            mailer = new Mailer( smtpServer, sender, emails );
+            mailer = new Mailer( smtpServer, sender, emails, "[deadman] " );
             alerts.add( Alerts.createEmailAlert( mailer ) );
         }
         else {

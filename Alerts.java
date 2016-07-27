@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -91,20 +90,16 @@ public class Alerts {
                     currentStatus_ = status;
                 }
             }
-            private void send( String word, final String msgTxt ) {
-                final String subject = "Message from deadman (" + word + ")";
-                new Thread() {
-                    public void run() {
-                        try {
-                            mailer.sendMessage( subject, msgTxt );
-                            logger_.info( "Sent alert email" );
-                        }
-                        catch ( Throwable e ) {
-                            logger_.log( Level.SEVERE,
-                                         "Failed to send email", e );
-                        }
-                    }
-                }.start();
+
+            /**
+             * Sends an email message.
+             *
+             * @param  topic   short summary of message
+             *                 (included in Subject line)
+             * @param  body    content of email
+             */
+            private void send( String topic, String body ) {
+                mailer.scheduleSendMessage( topic, body );
             }
         };
     }
