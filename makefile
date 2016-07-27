@@ -28,6 +28,9 @@ build: $(JARFILE) javadocs
 run: build
 	java -jar $(JARFILE) reset=10 warning=5
 
+deadman.props: $(JARFILE)
+	java -jar $(JARFILE) -writeconfig >$@
+
 javadocs: $(JSRC)
 	rm -rf $@
 	mkdir $@
