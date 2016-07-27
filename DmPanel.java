@@ -2,12 +2,16 @@ package uk.ac.bristol.star.deadman;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -99,6 +103,25 @@ public class DmPanel extends JPanel {
         initer_.setEnabled( false );
         tabber_.setEnabledAt( itCounter_, true );
         tabber_.setSelectedIndex( itCounter_ );
+        Window win = SwingUtilities.getWindowAncestor( this );
+        if ( win instanceof JFrame ) {
+            JFrame frm = (JFrame) win;
+            frm.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
+            frm.addWindowListener( new WindowAdapter() {
+                @Override
+                public void windowClosing( WindowEvent evt ) {
+                    String[] msg = new String[] {
+                        "Don't exit the application by closing the window.",
+                        "",
+                        "Please go to the Exit tab and fill in the checklist.",
+                    };
+                    JOptionPane
+                   .showMessageDialog( DmPanel.this, msg, "Close Prevented",
+                                       JOptionPane.WARNING_MESSAGE );
+                }
+            } );
+        }
+
         counter_.start();
     }
 

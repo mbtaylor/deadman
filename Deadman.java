@@ -122,6 +122,7 @@ public class Deadman {
         /* Set up GUI and post window. */
         DmPanel dmPanel = new DmPanel( cmap );
         JFrame frm = new JFrame();
+        frm.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
         Container content = frm.getContentPane();
         content.setLayout( new BorderLayout() );
         content.add( dmPanel, BorderLayout.CENTER );
