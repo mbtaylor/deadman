@@ -15,7 +15,6 @@ JSRC = \
        DmPanel.java \
        ExitPanel.java \
        FormPanel.java \
-       InitPanel.java \
        Logging.java \
        Mailer.java \
        SoundAlert.java \

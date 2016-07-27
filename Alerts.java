@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -96,16 +95,6 @@ public class Alerts {
                 mailer.scheduleSendMessage( topic, body );
             }
         };
-    }
-
-    /**
-     * Returns an alert instance which multiplexes status updates
-     * to a list of child alerts.
-     *
-     * @param  alertList  list of child alerts
-     */
-    public static Alert createMultiAlert( List<Alert> alertList ) {
-        return createMultiAlert( alertList.toArray( new Alert[ 0 ] ) );
     }
 
     /**
