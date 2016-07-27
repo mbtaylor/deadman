@@ -67,6 +67,18 @@ public class DmConfig {
     }
 
     /**
+     * Creates a boolean-valued key.
+     *
+     * @param   name   key name
+     * @param   dflt   default value
+     * @return  new key
+     */
+    public static ConfigKey<Boolean> createBooleanKey( String name,
+                                                       boolean dflt ) {
+        return new BooleanConfigKey( name, dflt );
+    }
+
+    /**
      * Config key for integer values.
      */
     private static class IntegerConfigKey extends ConfigKey<Integer> {

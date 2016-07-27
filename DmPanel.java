@@ -1,6 +1,7 @@
 package uk.ac.bristol.star.deadman;
 
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 /**
  * Main GUI panel for Deadman application.
@@ -20,8 +22,10 @@ public class DmPanel extends JPanel {
     private final JTabbedPane tabber_;
     private final InitPanel initer_;
     private final CountdownPanel counter_;
+    private final ExitPanel exiter_;
     private final int itIniter_;
     private final int itCounter_;
+    private final int itExiter_;
 
     /**
      * Constructor.
@@ -68,10 +72,18 @@ public class DmPanel extends JPanel {
         counter_.setResetSeconds( resetSec );
         counter_.setWarningSeconds( warningSec );
 
+        /* Set up exit panel. */
+        exiter_ = new ExitPanel( new Runnable() {
+            public void run() {
+                finished();
+            }
+        } );
+
         /* Place GUI components in a tabber. */
         tabber_ = new JTabbedPane();
         itIniter_ = addTab( tabber_, "Initialise", initer_ );
         itCounter_ = addTab( tabber_, "Counter", counter_ );
+        itExiter_ = addTab( tabber_, "Exit", exiter_ );
         tabber_.setEnabledAt( itCounter_, false );
         add( tabber_, BorderLayout.CENTER );
     }
@@ -85,6 +97,15 @@ public class DmPanel extends JPanel {
         tabber_.setEnabledAt( itCounter_, true );
         tabber_.setSelectedIndex( itCounter_ );
         counter_.start();
+    }
+
+    /**
+     * Invoked when user has wound up operations and is ready to
+     * exit the application.
+     */
+    private void finished() {
+        Window win = SwingUtilities.getWindowAncestor( this );
+        win.dispose();
     }
 
     /**

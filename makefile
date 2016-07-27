@@ -11,6 +11,7 @@ JSRC = \
        Deadman.java \
        DmConfig.java \
        DmPanel.java \
+       ExitPanel.java \
        FormPanel.java \
        InitPanel.java \
        Logging.java \
