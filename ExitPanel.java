@@ -58,10 +58,10 @@ public class ExitPanel extends FormPanel {
      * @return  list of keys
      */
     private static List<ConfigKey<Boolean>>
-             createChecklistKeys( String[] names ) {
+             createChecklistKeys( String[] names, boolean dflt ) {
          List<ConfigKey<Boolean>> list = new ArrayList<ConfigKey<Boolean>>();
          for ( String name : names ) {
-             list.add( DmConfig.createBooleanKey( name, false ) );
+             list.add( DmConfig.createBooleanKey( name, dflt ) );
          }
          return Collections.unmodifiableList( list );
     }

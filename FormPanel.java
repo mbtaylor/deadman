@@ -49,6 +49,15 @@ public abstract class FormPanel extends JPanel {
     }
 
     /**
+     * Returns this panel's config panel.
+     *
+     * @return  config panel
+     */
+    public ConfigPanel getConfigPanel() {
+        return configPanel_;
+    }
+
+    /**
      * This method is invoked when the submit button is hit.
      * The return value should indicate whether the information is
      * satisfactory or not; if false is returned, a popup is displayed

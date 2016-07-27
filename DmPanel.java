@@ -26,6 +26,7 @@ public class DmPanel extends JPanel {
     private final int itIniter_;
     private final int itCounter_;
     private final int itExiter_;
+    private String userName_;
 
     /**
      * Constructor.
@@ -93,6 +94,7 @@ public class DmPanel extends JPanel {
      * is about to start.
      */
     private void initialised() {
+        userName_ = initer_.getUserName();
         initer_.setEnabled( false );
         tabber_.setEnabledAt( itCounter_, true );
         tabber_.setSelectedIndex( itCounter_ );

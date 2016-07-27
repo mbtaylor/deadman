@@ -18,9 +18,9 @@ public class InitPanel extends FormPanel {
     private static final ConfigKey<String> USER_COMMENTS;
 
     private static final ConfigKey<?>[] USER_KEYS = {
-        USER_NAME = DmConfig.createStringKey( "name", "" ),
-        USER_PHONE = DmConfig.createStringKey( "phone", "" ),
-        USER_COMMENTS = DmConfig.createStringKey( "comments", "" ),
+        USER_NAME = DmConfig.createStringKey( "Name", "" ),
+        USER_PHONE = DmConfig.createStringKey( "Phone", "" ),
+        USER_COMMENTS = DmConfig.createStringKey( "Comments", "" ),
     };
 
     /**
@@ -48,6 +48,15 @@ public class InitPanel extends FormPanel {
         else {
             return false;
         }
+    }
+
+    /**
+     * Returns the currently filled in user name.
+     *
+     * @return  user name
+     */
+    public String getUserName() {
+        return getConfigPanel().getValues().get( USER_NAME );
     }
 
     /**
