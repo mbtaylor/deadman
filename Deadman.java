@@ -51,7 +51,6 @@ public class Deadman {
         String usage = ubuf.toString();
 
         /* Prepare config map from command-line arguments. */
-        ConfigMap cmap = new ConfigMap();
         List<String> argList = new ArrayList<String>( Arrays.asList( args ) );
         Map<String,String> argMap = new LinkedHashMap<String,String>();
         for ( Iterator<String> it = argList.iterator(); it.hasNext(); ) {
@@ -85,9 +84,13 @@ public class Deadman {
             System.err.println( usage );
             System.exit( 1 );
         }
+        ConfigMap cmap = new ConfigMap();
 
         /* Read config file if present. */
-        File file = new File( cmap.get( DmConfig.CONFIG_FILE ) );
+        String argFname = argMap.get( DmConfig.CONFIG_FILE.getName() );
+        File file =
+            new File( argFname == null ? cmap.get( DmConfig.CONFIG_FILE )
+                                       : argFname );
         if ( file.exists() ) {
             try {
                 logger_.info( "Loading properties from file " + file );
@@ -103,6 +106,8 @@ public class Deadman {
         else {
             logger_.info( "No file " + file + " - not loading properties" );
         }
+
+        /* Overwrite entries with command-line arguments where present. */
         for ( Map.Entry<String,String> entry : argMap.entrySet() ) {
             try {
                 cmap.assign( entry.getKey(), entry.getValue(), keys );
