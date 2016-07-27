@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -89,9 +90,9 @@ public class DmPanel extends JPanel {
 
         /* Place GUI components in a tabber. */
         tabber_ = new JTabbedPane();
-        itIniter_ = addTab( tabber_, "Initialise", initer_ );
+        itIniter_ = addTab( tabber_, "Initialise", withCounter( initer_ ) );
         itCounter_ = addTab( tabber_, "Counter", countPanel );
-        itExiter_ = addTab( tabber_, "Exit", exiter_ );
+        itExiter_ = addTab( tabber_, "Exit", withCounter( exiter_ ) );
         tabber_.setEnabledAt( itCounter_, false );
         add( tabber_, BorderLayout.CENTER );
     }
@@ -149,6 +150,25 @@ public class DmPanel extends JPanel {
         }
         Window win = SwingUtilities.getWindowAncestor( this );
         win.dispose();
+    }
+
+    /**
+     * Returns a component that includes the supplied component along with
+     * a view of the counter state.
+     *
+     * @param  comp  component to display
+     * @return  containing component
+     */
+    private JComponent withCounter( JComponent comp ) {
+        JPanel panel = new JPanel( new BorderLayout() );
+        JComponent counterLine = Box.createHorizontalBox();
+        counterLine.add( Box.createHorizontalGlue() );
+        counterLine.add( new CountdownLabel( counter_, 24 ) );
+        counterLine.setBorder( BorderFactory.createEmptyBorder( 0, 0, 5, 0 ) );
+        panel.add( counterLine, BorderLayout.NORTH );
+        panel.add( comp, BorderLayout.CENTER );
+        panel.setBorder( BorderFactory.createEmptyBorder( 10, 10, 10, 10 ) );
+        return panel;
     }
 
     /**

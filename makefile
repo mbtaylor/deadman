@@ -7,6 +7,7 @@ JSRC = \
        ConfigMap.java \
        ConfigKey.java \
        ConfigPanel.java \
+       CountdownLabel.java \
        CountdownModel.java \
        CountdownPanel.java \
        Deadman.java \

@@ -1,7 +1,6 @@
 package uk.ac.bristol.star.deadman;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.logging.Logger;
@@ -10,14 +9,12 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 
 /**
- * Visual component that displays a CountdownModel.
+ * Visual component that displays a CountdownLabel and a button to reset
+ * the counter.
  *
  * @author   Mark Taylor
  * @since    27 Jul 2016
@@ -34,15 +31,9 @@ public class CountdownPanel extends JPanel {
      */
     public CountdownPanel( final CountdownModel model ) {
         super( new BorderLayout() );
-        final JLabel countLabel = new JLabel();
-        countLabel.setOpaque( true );
-        countLabel.setFont( new Font( Font.MONOSPACED, Font.BOLD, 96 ) );
-        countLabel.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder( Color.DARK_GRAY, 8 ),
-                BorderFactory.createEmptyBorder( 10, 20, 10, 20 ) ) );
+        
+        final CountdownLabel countLabel = new CountdownLabel( model, 96 );
         add( countLabel, BorderLayout.CENTER );
-
         JButton resetButton = new JButton( new AbstractAction( "Reset" ) {
             public void actionPerformed( ActionEvent evt ) {
                 logger_.info( "Reset by user to "
@@ -60,14 +51,5 @@ public class CountdownPanel extends JPanel {
         buttonLine.setBorder( BorderFactory
                              .createEmptyBorder( 20, 20, 20, 20 ) );
         add( buttonLine, BorderLayout.SOUTH );
-
-        model.addChangeListener( new ChangeListener() {
-            public void stateChanged( ChangeEvent evt ) {
-                countLabel.setText( model.getCountdownText() );
-                countLabel.setBackground( model.getCountdownColor() );
-                countLabel.repaint();
-                countLabel.revalidate();
-            }
-        } );
     }
 }
