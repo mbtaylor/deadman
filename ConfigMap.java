@@ -129,7 +129,7 @@ public class ConfigMap {
      * @param  key  key
      * @return   string representation of key's (actual or default) value
      */
-    private <T> String getString( ConfigKey<T> key ) {
+    public <T> String getString( ConfigKey<T> key ) {
         return key.toString( get( key ) );
     }
 
@@ -140,7 +140,7 @@ public class ConfigMap {
      * @param  txtValue  string representation of value
      * @throws   ConfigException  if txtValue cannot be interpreted by key
      */
-    private <T> void putString( ConfigKey<T> key, String txtValue )
+    public <T> void putString( ConfigKey<T> key, String txtValue )
             throws ConfigException {
         put( key, key.fromString( txtValue ) );
     }

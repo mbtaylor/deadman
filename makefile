@@ -6,6 +6,7 @@ JSRC = \
        ConfigException.java \
        ConfigMap.java \
        ConfigKey.java \
+       ConfigPanel.java \
        CountdownPanel.java \
        Deadman.java \
        DmConfig.java \
