@@ -115,8 +115,12 @@ public class DmPanel extends JPanel {
                     final Mailer mailer;
                     if ( emails.length > 0 ) {
                         mailer = new Mailer( smtpServer, sender, emails,
-                                             "[deadman] " );
-                        sendInitEmail( mailer, userName, initCmap, initKeys );
+                                             "[deadman] ", this );
+                        boolean sendOk = sendInitEmail( mailer, userName,
+                                                        initCmap, initKeys );
+                        if ( ! sendOk ) {
+                            return false;
+                        }
                         alertList_.add( Alerts.createEmailAlert( mailer ) );
                     }
                     else {
@@ -271,9 +275,11 @@ public class DmPanel extends JPanel {
      * @param  userName  user name
      * @param  cmap   user configuration info
      * @param  keys   keys for which information should be reported
+     * @return   true iff send attempt was apparently successful
      */
-    private static void sendInitEmail( Mailer mailer, String userName,
-                                       ConfigMap cmap, ConfigKey<?>[] keys ) {
+    private static boolean sendInitEmail( Mailer mailer, String userName,
+                                          ConfigMap cmap,
+                                          ConfigKey<?>[] keys ) {
         String topic = "Startup by " + cmap.get( USER_NAME );
         StringBuffer sbuf = new StringBuffer()
             .append( "Deadman application started at " )
@@ -288,7 +294,7 @@ public class DmPanel extends JPanel {
                 .append( "\n" );
         }
         String body = sbuf.toString();
-        mailer.scheduleSendMessage( topic, body );
+        return mailer.sendMessage( topic, body );
     }
 
     /**
