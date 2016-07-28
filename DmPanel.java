@@ -32,6 +32,7 @@ public class DmPanel extends JPanel {
     private final ExitPanel exiter_;
     private final int itIniter_;
     private final int itCounter_;
+    private final int itConfiger_;
     private final int itExiter_;
     private final List<Alert> alertList_;
     private Mailer mailer_;
@@ -159,10 +160,14 @@ public class DmPanel extends JPanel {
             }
         } );
 
+        /* Add a reset slider control. */
+        ResetSlider rslider = new ResetSlider( counter_ );
+
         /* Place GUI components in a tabber. */
         tabber_ = new JTabbedPane();
         itIniter_ = addTab( tabber_, "Initialise", withCounter( initer_ ) );
         itCounter_ = addTab( tabber_, "Counter", countPanel );
+        itConfiger_ = addTab( tabber_, "Config", withCounter( rslider ) );
         itExiter_ = addTab( tabber_, "Exit", withCounter( exiter_ ) );
         tabber_.setEnabledAt( itCounter_, false );
         tabber_.setEnabledAt( itExiter_, false );

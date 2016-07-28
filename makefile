@@ -17,6 +17,7 @@ JSRC = \
        FormPanel.java \
        Logging.java \
        Mailer.java \
+       ResetSlider.java \
        SoundAlert.java \
        Status.java \
 

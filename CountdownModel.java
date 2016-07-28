@@ -68,8 +68,8 @@ public class CountdownModel {
      */
     public void setResetSeconds( int resetSec ) {
         resetSec_ = resetSec;
-        if ( warningSec_ >= resetSec_ ) {
-            warningSec_ = resetSec_ / 5;
+        if ( warningSec_ > resetSec_ ) {
+            warningSec_ = resetSec_;
         }
         resetZero();
     }
@@ -90,6 +90,9 @@ public class CountdownModel {
      */
     public void setWarningSeconds( int warningSec ) {
         warningSec_ = warningSec;
+        if ( warningSec_ > resetSec_ ) {
+            resetSec_ = warningSec_;
+        }
         resetZero();
     }
 
