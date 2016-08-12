@@ -5,6 +5,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.mail.Address;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -33,7 +36,7 @@ public class DmConfig {
     public static final ConfigKey<Boolean> ONTOP;
 
     /** Key giving recipient email message list. */
-    public static final ConfigKey<String[]> EMAILS;
+    public static final ConfigKey<Address[]> EMAILS;
 
     /** Key for whether the audio alarm is in effect. */
     public static final ConfigKey<Boolean> AUDIO;
@@ -42,7 +45,7 @@ public class DmConfig {
     public static final ConfigKey<String> SMTP_SERVER;
 
     /** Key giving From address for email messages. */
-    public static final ConfigKey<String> SMTP_SENDER;
+    public static final ConfigKey<Address> SMTP_SENDER;
 
     /** Key indicating whether email contacts are required. */
     public static final ConfigKey<Boolean> REQUIRE_EMAIL;
@@ -55,13 +58,14 @@ public class DmConfig {
         RESET_SEC = new IntegerConfigKey( "reset", 30 * 60 ),
         WARNING_SEC = new IntegerConfigKey( "warning", 3 * 60 ),
         ONTOP = new BooleanConfigKey( "alwaysOnTop", true ),
-        EMAILS = new StringsConfigKey( "emails", ',', new String[ 0 ] ),
+        EMAILS = new AddressesConfigKey( "emails", ',', new Address[ 0 ] ),
         AUDIO = new BooleanConfigKey( "audio", true ),
         SMTP_SERVER =
             new StringConfigKey( "smtpHost", "smtp-srv.bristol.ac.uk" ),
         SMTP_SENDER =
-            new StringConfigKey( "mailSender",
-                                 "Deadman <m.b.taylor@bristol.ac.uk>" ),
+            new AddressConfigKey(
+                       "mailSender",
+                       createAddress( "Deadman <m.b.taylor@bristol.ac.uk>" ) ),
         REQUIRE_EMAIL = new BooleanConfigKey( "requireEmail", true ),
     };
 
@@ -96,6 +100,30 @@ public class DmConfig {
             }
             public ConfigControl<String[]> createControl() {
                 return new Add1ArrayControl<String>( this );
+            }
+        };
+    }
+
+    /**
+     * Creates an address-array-valued key with a GUI control that lets you
+     * add a single entry to the default list.
+     *
+     * @param   name  key name
+     * @param   dflt  default value
+     * @return  new key
+     */
+    public static ConfigKey<Address[]>
+            createAdd1AddressesKey( String name, Address[] dflt ) {
+        return new ArrayConfigKey<Address>( name, Address[].class, ',', dflt ) {
+            public Address fromStringComponent( String txt )
+                    throws ConfigException {
+                return addressFromString( txt );
+            }
+            public String toStringComponent( Address value ) {
+                return addressToString( value );
+            }
+            public ConfigControl<Address[]> createControl() {
+                return new Add1ArrayControl<Address>( this );
             }
         };
     }
@@ -174,6 +202,86 @@ public class DmConfig {
                     return Boolean.valueOf( checkBox.isSelected() );
                 }
             };
+        }
+    }
+
+    /**
+     * ConfigKey for Address objects.
+     */
+    private static class AddressConfigKey extends ConfigKey<Address> {
+        AddressConfigKey( String name, Address dflt ) {
+            super( name, Address.class, dflt );
+        }
+        public Address fromString( String txt ) throws ConfigException {
+            return addressFromString( txt );
+        }
+        public String toString( Address val ) {
+            return addressToString( val );
+        }
+        public ConfigControl<Address> createControl() {
+            return new TextFieldControl<Address>( this );
+        }
+    }
+
+    /**
+     * ConfigKey for an array of Address objects.
+     */
+    private static class AddressesConfigKey extends ArrayConfigKey<Address> {
+        public AddressesConfigKey( String name, char sepChar, Address[] dflt ) {
+            super( name, Address[].class, sepChar, dflt );
+        }
+        public Address fromStringComponent( String txt )
+                throws ConfigException {
+            return addressFromString( txt );
+        }
+        public String toStringComponent( Address value ) {
+            return addressToString( value );
+        }
+        public ConfigControl<Address[]> createControl() {
+            return new TextFieldControl<Address[]>( this );
+        }
+    }
+
+    /**
+     * Creates an address but throws a ConfigException not a checked one.
+     *
+     * @param   txt  RFC-822-compliant address
+     * @return   Address object
+     * @throws   ConfigException  if there's trouble
+     */
+    private static Address addressFromString( String txt )
+            throws ConfigException {
+        try {
+            return new InternetAddress( txt, true );
+        }
+        catch ( AddressException e ) {
+            throw new ConfigException( "Bad email address", e );
+        }
+    }
+
+    /**
+     * Turns an address into a string.
+     *
+     * @param   addr  aaddress
+     * @return   string representation
+     */
+    private static String addressToString( Address addr ) {
+        return addr == null ? null : addr.toString();
+    }
+
+    /**
+     * Creates an address but throws a RuntimeException not a checked one.
+     *
+     * @param   addr  RFC-822-compliant address
+     * @return   Address object
+     * @throws   RuntimeException  if there's trouble
+     */
+    private static Address createAddress( String addr ) {
+        try {
+            return new InternetAddress( addr );
+        }
+        catch ( AddressException e ) {
+            throw new RuntimeException( "Bad address: " + addr, e );
         }
     }
 

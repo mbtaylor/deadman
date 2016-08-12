@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
 
@@ -27,8 +29,8 @@ import javax.swing.JOptionPane;
 public class Mailer {
 
     private final String smtpServer_;
-    private final String sender_;
-    private final String[] recipients_;
+    private final Address sender_;
+    private final Address[] recipients_;
     private final String subjectPrefix_;
     private final Properties props_;
     private final Component parent_;
@@ -48,7 +50,7 @@ public class Mailer {
      * @param  parent    parent component, if present will be used to signal
      *                   errors using JOptionPane; may be null for no GUI
      */
-    public Mailer( String smtpServer, String sender, String[] recipients,
+    public Mailer( String smtpServer, Address sender, Address[] recipients,
                    String subjectPrefix, Component parent ) {
         smtpServer_ = smtpServer;
         sender_ = sender;
@@ -103,7 +105,7 @@ public class Mailer {
                 lines.add( "Failed to send email: " + topic );
                 lines.add( " " );
                 lines.add( "Intended recipients: " );
-                for ( String r : recipients_ ) {
+                for ( Address r : recipients_ ) {
                     lines.add( "   " + r );
                 }
                 lines.add( " " );
@@ -129,9 +131,7 @@ public class Mailer {
             throws MessagingException {
         MimeMessage msg = new MimeMessage( Session.getInstance( props_ ) );
         msg.setFrom( sender_ );
-        for ( String recipient : recipients_ ) {
-            msg.setRecipients( Message.RecipientType.TO, recipient );
-        }
+        msg.setRecipients( Message.RecipientType.TO, recipients_ );
         msg.setSentDate( new Date() );
         msg.setSubject( subjectPrefix_ + topic );
         msg.setText( body );
@@ -139,7 +139,7 @@ public class Mailer {
     }
 
     public static void main( String[] args ) throws MessagingException {
-        String[] recipients = new String[] { args[ 0 ] };
+        Address[] recipients = { new InternetAddress( args[ 0 ] ) };
         ConfigMap cmap = new ConfigMap();
         Mailer mailer = new Mailer( cmap.get( DmConfig.SMTP_SERVER ),
                                     cmap.get( DmConfig.SMTP_SENDER ),

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.mail.Address;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JComponent;
@@ -56,12 +57,12 @@ public class DmPanel extends JPanel {
 
         /* Acquire configuration items. */
         boolean isAudio = cmap.get( DmConfig.AUDIO ).booleanValue();
-        String[] emails = cmap.get( DmConfig.EMAILS );
+        Address[] emails = cmap.get( DmConfig.EMAILS );
         int resetSec = cmap.get( DmConfig.RESET_SEC ).intValue();
         int warningSec = cmap.get( DmConfig.WARNING_SEC ).intValue();
         boolean alwaysOnTop = cmap.get( DmConfig.ONTOP ).booleanValue();
         final String smtpServer = cmap.get( DmConfig.SMTP_SERVER );
-        final String sender = cmap.get( DmConfig.SMTP_SENDER ); 
+        final Address sender = cmap.get( DmConfig.SMTP_SENDER ); 
         final boolean requireEmail = cmap.get( DmConfig.REQUIRE_EMAIL );
 
         /* Prepare alerts according to configuration.
@@ -83,9 +84,9 @@ public class DmPanel extends JPanel {
         /* Set up a custom key for getting email contact addresses.
          * This takes its default value from the application config,
          * but will allow the user to adjust it. */
-        final ConfigKey<String[]> mailsKey =
-            DmConfig.createAdd1StringsKey( "Contact Emails", 
-                                           cmap.get( DmConfig.EMAILS ) );
+        final ConfigKey<Address[]> mailsKey =
+            DmConfig.createAdd1AddressesKey( "Contact Emails", 
+                                             cmap.get( DmConfig.EMAILS ) );
 
         /* Prepare the other config keys used for the initialisation panel. */
         final ConfigKey<?>[] initKeys = new ConfigKey<?>[] {
@@ -102,7 +103,7 @@ public class DmPanel extends JPanel {
         /* Set up the initialiser panel. */
         initer_ = new FormPanel( initKeys, "Start" ) {
             protected boolean consumeConfig( ConfigMap initCmap ) {
-                String[] emails = initCmap.get( mailsKey );
+                Address[] emails = initCmap.get( mailsKey );
 
                 /* Check the form is filled in completely enough. */
                 if ( hasAllValues( initCmap, requiredInitKeys ) &&
