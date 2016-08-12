@@ -1,6 +1,7 @@
 package uk.ac.bristol.star.deadman;
 
 import java.awt.Toolkit;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,9 +87,15 @@ public class DmConfig {
      */
     public static ConfigKey<String[]> createAdd1StringsKey( String name,
                                                             String[] dflt ) {
-        return new StringsConfigKey( name, ',', dflt ) {
+        return new ArrayConfigKey<String>( name, String[].class, ',', dflt ) {
+            public String fromStringComponent( String txt ) {
+                return txt;
+            }
+            public String toStringComponent( String value ) {
+                return value;
+            }
             public ConfigControl<String[]> createControl() {
-                return new Add1StringsControl( this );
+                return new Add1ArrayControl<String>( this );
             }
         };
     }
@@ -189,10 +196,74 @@ public class DmConfig {
     }
 
     /**
-     * Config key for string array values.
+     * Config key for an array of typed values.
+     *
+     * @param  <T>  component type
      */
-    private static class StringsConfigKey extends ConfigKey<String[]> {
+    private static abstract class ArrayConfigKey<T> extends ConfigKey<T[]> {
         private final char sepChar_;
+        private final Class<T> compClazz_;
+
+        /**
+         * Constructor.
+         *
+         * @param  name   key name
+         * @param  clazz   class of array type
+         * @param  sepChar   separator character
+         * @param  dflt   default value
+         */
+        ArrayConfigKey( String name, Class<T[]> clazz, char sepChar,
+                        T[] dflt ) {
+            super( name, clazz, dflt );
+            @SuppressWarnings("unchecked")
+            Class<T> cc = (Class<T>) clazz.getComponentType();
+            compClazz_ = cc;
+            sepChar_ = sepChar;
+        }
+
+        /**
+         * Converts a single string to a value of this key's component type.
+         */
+        public abstract T fromStringComponent( String txt )
+                throws ConfigException;
+
+        /**
+         * Converts a single component value to a string.
+         */
+        public abstract String toStringComponent( T value );
+
+        public T[] fromString( String txt ) throws ConfigException {
+            String[] words = txt.split( "\\Q" + sepChar_ + "\\E" );
+            int n = words.length;
+            @SuppressWarnings("unchecked")
+            T[] array = (T[]) Array.newInstance( compClazz_, n );
+            for ( int i = 0; i < n; i++ ) {
+                array[ i ] = fromStringComponent( words[ i ] );
+            }
+            return array;
+        }
+
+        public String toString( T[] value ) {
+            StringBuffer sbuf = new StringBuffer();
+            int n = value.length;
+            for ( int i = 0; i < n; i++ ) {
+                if ( i > 0 ) {
+                    sbuf.append( sepChar_ );
+                }
+                sbuf.append( toStringComponent( value[ i ] ) );
+            }
+            return sbuf.toString();
+        }
+
+        public ConfigControl<T[]> createControl() {
+            return new TextFieldControl<T[]>( this );
+        }
+    }
+
+    /**
+     * Config key for array of string values.
+     */
+    private static class StringsConfigKey extends ArrayConfigKey<String> {
 
         /**
          * Constructor.
@@ -202,21 +273,13 @@ public class DmConfig {
          * @param  dflt   default value
          */
         StringsConfigKey( String name, char sepChar, String[] dflt ) {
-            super( name, String[].class, dflt );
-            sepChar_ = sepChar;
+            super( name, String[].class, sepChar, dflt );
         }
-        public String[] fromString( String txt ) {
-            return txt.split( "\\Q" + sepChar_ + "\\E" );
+        public String fromStringComponent( String txt ) {
+            return txt;
         }
-        public String toString( String[] value ) {
-            StringBuffer sbuf = new StringBuffer();
-            for ( int i = 0; i < value.length; i++ ) {
-                if ( i > 0 ) {
-                    sbuf.append( sepChar_ );
-                }
-                sbuf.append( value[ i ] );
-            }
-            return sbuf.toString();
+        public String toStringComponent( String value ) {
+            return value;
         }
         public ConfigControl<String[]> createControl() {
             return new TextFieldControl<String[]>( this );
@@ -269,10 +332,10 @@ public class DmConfig {
      * GUI control that gives you checkboxes for including all the
      * default values, and the option to add one new entry.
      */
-    private static class Add1StringsControl implements ConfigControl<String[]> {
-        private final ConfigKey<String[]> key_;
+    private static class Add1ArrayControl<T> implements ConfigControl<T[]> {
+        private final ArrayConfigKey<T> key_;
         private final int nd_;
-        private final String[] dflts_;
+        private final T[] dflts_;
         private final JCheckBox[] checkBoxes_;
         private final JTextField textField_;
         private final JComponent box_;
@@ -282,7 +345,7 @@ public class DmConfig {
          *
          * @param  key
          */
-        public Add1StringsControl( ConfigKey<String[]> key ) {
+        public Add1ArrayControl( ArrayConfigKey<T> key ) {
             key_ = key;
             dflts_ = key.getDefaultValue();
             nd_ = dflts_.length;
@@ -299,7 +362,8 @@ public class DmConfig {
             };
             for ( int i = 0; i < nd_; i++ ) {
                 JComponent line = Box.createHorizontalBox();
-                JCheckBox checkBox = new JCheckBox( dflts_[ i ] );
+                JCheckBox checkBox =
+                    new JCheckBox( key_.toStringComponent( dflts_[ i ] ) );
                 line.add( checkBox );
                 line.add( Box.createHorizontalGlue() );
                 checkBoxes_[ i ] = checkBox;
@@ -313,23 +377,23 @@ public class DmConfig {
                     BorderFactory.createEtchedBorder(),
                     BorderFactory.createEmptyBorder( 2, 2, 2, 2 ) ) );
         }
-        public ConfigKey<String[]> getKey() {
+        public ConfigKey<T[]> getKey() {
             return key_;
         }
         public JComponent getComponent() {
             return box_;
         }
-        public void setValue( String[] txts ) {
-            List<String> txtList =
-                new ArrayList<String>( Arrays.asList( txts ) );
+        public void setValue( T[] values ) {
+            List<T> valueList = new ArrayList<T>( Arrays.asList( values ) );
             for ( int i = 0; i < nd_; i++ ) {
-                checkBoxes_[ i ].setSelected( txtList.remove( dflts_[ i ] ) );
+                checkBoxes_[ i ].setSelected( valueList.remove( dflts_[ i ] ) );
             }
-            textField_.setText( txtList.size() > 0 ? txtList.remove( 0 )
-                                                   : null );
+            textField_.setText( valueList.size() > 0
+                              ? key_.toStringComponent( valueList.remove( 0 ) )
+                              : null );
         }
-        public String[] getValue() {
-            List<String> list = new ArrayList<String>();
+        public T[] getValue() {
+            List<T> list = new ArrayList<T>();
             for ( int i = 0; i < nd_; i++ ) {
                 if ( checkBoxes_[ i ].isSelected() ) {
                     list.add( dflts_[ i ] );
@@ -337,9 +401,17 @@ public class DmConfig {
             }
             String fieldTxt = textField_.getText();
             if ( fieldTxt != null && fieldTxt.trim().length() > 0 ) {
-                list.add( fieldTxt );
+                try {
+                    list.add( key_.fromStringComponent( fieldTxt ) );
+                }
+                catch ( ConfigException e ) {
+                    Toolkit.getDefaultToolkit().beep();
+                    textField_.setText( null );
+                }
             }
-            return list.toArray( new String[ 0 ] );
+            @SuppressWarnings("unchecked")
+            T[] array0 = (T[]) Array.newInstance( key_.compClazz_, 0 );
+            return list.toArray( array0 );
         }
     }
 }
