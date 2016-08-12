@@ -48,7 +48,7 @@ clean:
 $(JARFILE): $(JSRC) $(RESOURCES) $(JAVAMAIL_JAR)
 	rm -rf tmp
 	mkdir tmp
-	javac -classpath $(JAVAMAIL_JAR) -d tmp $(JSRC)
+	javac -Xlint:unchecked -classpath $(JAVAMAIL_JAR) -d tmp $(JSRC)
 	cp $(RESOURCES) tmp/uk/ac/bristol/star/deadman/
 	cd tmp && jar xf ../$(JAVAMAIL_JAR) javax/mail com/sun/mail
 	echo "Main-Class: $(MAINCLASS)" >tmp.manifest

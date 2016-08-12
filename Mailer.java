@@ -99,7 +99,7 @@ public class Mailer {
                          "Failed recipients: "
                        + Arrays.toString( recipients_ ) );
             if ( parent_ != null ) {
-                List<String> lines = new ArrayList();
+                List<String> lines = new ArrayList<String>();
                 lines.add( "Failed to send email: " + topic );
                 lines.add( " " );
                 lines.add( "Intended recipients: " );

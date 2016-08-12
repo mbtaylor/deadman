@@ -114,7 +114,8 @@ public class ResetSlider extends JPanel {
         slider.setMajorTickSpacing( 60 * 10 );
         slider.setMinorTickSpacing( 60 );
         slider.setPaintTicks( true );
-        Hashtable labels = new Hashtable();
+        Hashtable<Integer,JComponent> labels =
+            new Hashtable<Integer,JComponent>();
         for ( int i = 0; i < maxMins; i += 10 ) {
             labels.put( new Integer( 60 * i ),
                         new JLabel( Integer.toString( i ) ) );
