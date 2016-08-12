@@ -18,4 +18,14 @@ public class ConfigException extends Exception {
     public ConfigException( String msg ) {
         super( msg );
     }
+
+    /**
+     * Chained constructor.
+     *
+     * @param  msg   message, should be human-readable
+     * @param  cause   underlying exception
+     */
+    public ConfigException( String msg, Throwable cause ) {
+        super( msg, cause );
+    }
 }
