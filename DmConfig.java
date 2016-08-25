@@ -64,8 +64,8 @@ public class DmConfig {
             new StringConfigKey( "smtpHost", "smtp-srv.bristol.ac.uk" ),
         SMTP_SENDER =
             new AddressConfigKey(
-                       "mailSender",
-                       createAddress( "Deadman <m.b.taylor@bristol.ac.uk>" ) ),
+                    "mailSender",
+                    createAddress( "Deadman <astro-deadman@bristol.ac.uk>" ) ),
         REQUIRE_EMAIL = new BooleanConfigKey( "requireEmail", true ),
     };
 
