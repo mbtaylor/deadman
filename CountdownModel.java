@@ -43,7 +43,7 @@ public class CountdownModel {
                 updateTime();
             }
         } );
-        updateTime();
+        resetZero();
     }
 
     /**
