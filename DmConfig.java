@@ -50,6 +50,9 @@ public class DmConfig {
     /** Key indicating whether email contacts are required. */
     public static final ConfigKey<Boolean> REQUIRE_EMAIL;
 
+    /** Key giving name of a log file. */
+    public static final ConfigKey<String> LOG_FILE;
+
     /**
      * Known configuration keys.
      */
@@ -67,6 +70,7 @@ public class DmConfig {
                     "mailSender",
                     createAddress( "Deadman <astro-deadman@bristol.ac.uk>" ) ),
         REQUIRE_EMAIL = new BooleanConfigKey( "requireEmail", true ),
+        LOG_FILE = new StringConfigKey( "log", "deadman.log" ),
     };
 
     /**

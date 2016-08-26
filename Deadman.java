@@ -12,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 
@@ -31,7 +33,8 @@ public class Deadman {
     public static void main( String[] args ) throws IOException {
 
         /* Configure logging. */
-        Logging.configureLogger( Logger.getLogger( "" ) );
+        Logger logger0 = Logger.getLogger( "" );
+        Logging.configureLogger( logger0 );
 
         /* Prepare usage message. */
         StringBuffer ubuf = new StringBuffer()
@@ -115,6 +118,24 @@ public class Deadman {
             catch ( ConfigException e ) {
                 System.err.println( e.getMessage() );
                 System.exit( 1 );
+            }
+        }
+
+        /* Log subsequent logging messages to a log file. */
+        String logFile = cmap.get( DmConfig.LOG_FILE );
+        if ( logFile != null && logFile.trim().length() > 0 ) {
+            boolean append = true;
+            Handler fh;
+            try {
+                fh = Logging.createFileLogHandler( logFile, append );
+                logger_.info( "Logging to file " + logFile );
+            }
+            catch ( IOException e ) {
+                fh = null;
+                logger_.log( Level.WARNING, "Can't log to file " + logFile, e );
+            }
+            if ( fh != null ) {
+                logger0.addHandler( fh );
             }
         }
 
