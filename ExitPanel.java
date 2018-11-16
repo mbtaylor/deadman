@@ -17,11 +17,13 @@ public class ExitPanel extends FormPanel {
     private static final List<ConfigKey<Boolean>> CHECK_KEYS =
             createChecklistKeys( new String[] {
         "Park telescope",
+        "Warm up camera and switch off",
         "Dome in home position",
         "Fasten dome clamps",
         "Secure latch on hatch",
         "Switch telescope off",
-        "Switch camera off",
+        "Switch PC off",
+        "Switch off power to dome",
     }, false );
     private static final ConfigKey<String> COMMENT_KEY =
         DmConfig.createStringKey( "Comment", "" );
