@@ -22,8 +22,7 @@ public class ExitPanel extends FormPanel {
         "Fasten dome clamps",
         "Secure latch on hatch",
         "Switch telescope off",
-        "Switch PC off",
-        "Switch off power to dome",
+        "Disconnect power to dome motor",
     }, false );
     private static final ConfigKey<String> COMMENT_KEY =
         DmConfig.createStringKey( "Comment", "" );
