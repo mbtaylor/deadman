@@ -2,9 +2,12 @@ package uk.ac.bristol.star.deadman;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -35,6 +38,9 @@ public class Deadman {
         /* Configure logging. */
         Logger logger0 = Logger.getLogger( "" );
         Logging.configureLogger( logger0 );
+
+        /* Log version. */
+        logger0.info( "Deadman version " + getVersion() );
 
         /* Prepare usage message. */
         StringBuffer ubuf = new StringBuffer()
@@ -165,4 +171,21 @@ public class Deadman {
         frm.pack();
         frm.setVisible( true );
     }
+
+    public static String getVersion() {
+        String vfile = "version.txt";
+        URL resourceUrl = Deadman.class.getResource( vfile );
+        if ( resourceUrl == null ) {
+            return "?? (no resource " + vfile + ")";
+        }
+        try {
+            return new BufferedReader( new InputStreamReader( resourceUrl
+                                                             .openStream() ) )
+                  .readLine();
+        }
+        catch ( IOException e ) {
+            return "?? (error reading " + vfile + ": " + e + ")";
+        }
+    }
+
 }
