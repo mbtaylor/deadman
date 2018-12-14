@@ -13,7 +13,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 /**
  * Provides application-specific configuration keys.
@@ -142,6 +144,47 @@ public class DmConfig {
     public static ConfigKey<Boolean> createBooleanKey( String name,
                                                        boolean dflt ) {
         return new BooleanConfigKey( name, dflt );
+    }
+
+    /**
+     * Creates a read-only key.  This just provides display for a fixed value.
+     *
+     * @param  name  key name
+     * @param  value  fixed value
+     * @return  new key
+     */
+    public static ConfigKey<String> createInfoKey( final String name,
+                                                   final String value ) {
+        return new ConfigKey<String>( name, String.class, value ) {
+            public String fromString( String txt ) throws ConfigException {
+                if ( ! value.equals( txt ) ) {
+                    throw new ConfigException( "Can't change " + name );
+                }
+                return value;
+            }
+            public String toString( String txt ) {
+                return txt;
+            }
+            public ConfigControl<String> createControl() {
+                final JLabel label = new JLabel( value );
+                label.setFont( UIManager.getFont( "TextField.font" ) );
+                final ConfigKey<String> key = this;
+                return new ConfigControl<String>() {
+                    public ConfigKey<String> getKey() {
+                        return key;
+                    }
+                    public JComponent getComponent() {
+                        return label;
+                    }
+                    public String getValue() {
+                        return value;
+                    }
+                    public void setValue( String v ) {
+                        assert v.equals( value );
+                    }
+                };
+            }
+        };
     }
 
     /**
