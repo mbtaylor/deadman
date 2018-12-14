@@ -53,18 +53,18 @@ $(JARFILE): $(JSRC) $(RESOURCES) version.txt $(JAVAMAIL_JAR)
 	cd tmp && jar xf ../$(JAVAMAIL_JAR) javax/mail com/sun/mail
 	echo "Main-Class: $(MAINCLASS)" >tmp.manifest
 	cd tmp && jar cmf ../tmp.manifest ../$@ .
-	rm -rf tmp tmp.manifest
+	rm -rf tmp tmp.manifest version.txt
 
 $(JAVAMAIL_JAR):
 	curl 'https://maven.java.net/content/repositories/releases/com/sun/mail/javax.mail/1.5.5/javax.mail-1.5.5.jar' >$@
 
 version.txt:
 	echo `git show -s --format=%h` \
-             `git show -s --format=%ci | sed 's/ .*//'` \
+             "("`git show -s --format=%ci | sed 's/ .*//'`")" \
              >$@
 	if git status --porcelain | grep -q '^[MADRU ][MADRU ]'; \
         then \
-	   echo "`cat $@` (modified)" >$@; \
+	   echo "`cat $@` [modified]" >$@; \
         fi
        
 
