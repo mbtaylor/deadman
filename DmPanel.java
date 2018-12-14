@@ -45,6 +45,8 @@ public class DmPanel extends JPanel {
         DmConfig.createStringKey( "Phone", "" );
     private static final ConfigKey<String> USER_COMMENTS =
         DmConfig.createStringKey( "Comments", "" );
+    private static final ConfigKey<String> APP_VERSION =
+        DmConfig.createInfoKey( "Version", Deadman.getVersion() );
     private static final Logger logger_ =
         Logger.getLogger( DmPanel.class.getName() );
 
@@ -94,6 +96,7 @@ public class DmPanel extends JPanel {
             USER_PHONE,
             mailsKey,
             USER_COMMENTS,
+            APP_VERSION,
         };
         final List<ConfigKey<String>> requiredInitKeys =
             new ArrayList<ConfigKey<String>>();
